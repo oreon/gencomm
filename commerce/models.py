@@ -18,8 +18,8 @@ class Address(models.Model):
     
 
 Gender = (
-    ('M', 'Male'),
-    ('F', 'Female'),
+    ('MALE', 'Male'),
+    ('FEMALE', 'Female'),
     ('U', 'Unknown'),
 )
 
@@ -62,6 +62,21 @@ class Employee(Person):
     @property
     def displayName(self):
         return self.__str__()
+    
+class Skill(models.Model):
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    
+    def __str__(self):
+        return self.name
+    
+    @property
+    def displayName(self):
+        return self.__str__()
+    
+class EmployeeSkill(models.Model):
+    employee = models.ForeignKey(Employee, related_name='employeeSkills')
+    skill = models.ForeignKey(Skill)
+    expereince = models.IntegerField(default = 1)
     
  
 

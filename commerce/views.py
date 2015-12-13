@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from commerce.models import Employee, Department
+from commerce.models import Employee, Department, Skill, EmployeeSkill
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
-    EmployeeWritableSerializer
+    EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer
 
 
 class ReadNestedWriteFlatMixin(object):
@@ -28,6 +28,12 @@ def  get_massaged_serializer_class(serializer_class, request):
         return serializer_class
 
 
+# Create your views here.
+class SkillViewSet( viewsets.ModelViewSet):
+    queryset = Skill.objects.all()
+    
+    def get_serializer_class(self, *args, **kwargs):
+        return SkillSerializer
 
 # Create your views here.
 class EmployeeViewSet( viewsets.ModelViewSet):
@@ -48,6 +54,10 @@ class EmployeeLookupViewSet(viewsets.ModelViewSet):
 class EmployeeCompleteViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    
+class EmployeeSkillViewSet(viewsets.ModelViewSet):
+    queryset = EmployeeSkill.objects.all()
+    serializer_class = EmployeeSkillSerializer
 
 '''    
 class EmployeeCompleteViewSet(viewsets.ModelViewSet):

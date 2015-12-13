@@ -18,22 +18,29 @@ from django.contrib import admin
 from rest_framework import routers
 
 from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
-    EmployeeCompleteViewSet
+    EmployeeCompleteViewSet, SkillViewSet, EmployeeSkillViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
 
 
 router = routers.SimpleRouter(trailing_slash=False)
 
+router.register(r'skills', SkillViewSet)
+
 router.register(r'employees', EmployeeViewSet)
 router.register(r'employeesWritable', EmployeeWritableViewSet)
 router.register(r'employeesComplete', EmployeeCompleteViewSet)
 router.register(r'employeesLookup', EmployeeLookupViewSet)
 
+router.register(r'employeeSkills', EmployeeSkillViewSet)
+
+
 router.register(r'departmentsLookup', DepartmentLookupViewSet)
 router.register(r'departments', DepartmentViewSet)
 router.register(r'departmentsComplete', DepartmentCompleteViewSet)
 router.register(r'departmentsWritable', DepartmentWritableViewSet)
+
+
 
 
 urlpatterns = [
