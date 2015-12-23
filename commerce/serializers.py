@@ -4,6 +4,15 @@ from rest_framework import serializers
 from commerce.models import Employee, Department, Skill, EmployeeSkill
 
 
+
+class DepartmentLookupSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Department
+        fields = ('displayName', 'id', )  
+
 class SkillSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
@@ -13,22 +22,6 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    
-    displayName = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Department
-        
-class DepartmentLookupSerializer(serializers.ModelSerializer):
-    
-    displayName = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Department
-        fields = ('displayName', 'id', )  
-        
-
 class EmployeeLookupSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
@@ -37,16 +30,23 @@ class EmployeeLookupSerializer(serializers.ModelSerializer):
         model = Employee
         fields = ('displayName', 'id', )     
 
+class EmployeeSkillWritableSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmployeeSkill
+        exclude = ('employee',)
+        
 class EmployeeSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployeeSkill
         exclude = ('employee',)
+        depth = 1
 
 
 class EmployeeWritableSerializer(serializers.ModelSerializer):
     #department = DepartmentLookupSerializer()
-    employeeSkills = EmployeeSkillSerializer(many=True)
+    employeeSkills = EmployeeSkillWritableSerializer(many=True)
     class Meta:
         model = Employee
         #depth = 1
@@ -75,12 +75,22 @@ class EmployeeSerializer(  serializers.ModelSerializer,):
         #depth = 1
         
     
-        
 class FullDepartmentSerializer(serializers.ModelSerializer):
     
     employees = EmployeeSerializer(many=True, read_only=True)
     
     class Meta(DepartmentSerializer.Meta):
         model = Department
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Department
+        
+
+
+        
         
         

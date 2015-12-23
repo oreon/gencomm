@@ -76,7 +76,7 @@ class Skill(models.Model):
 class EmployeeSkill(models.Model):
     employee = models.ForeignKey(Employee, related_name='employeeSkills')
     skill = models.ForeignKey(Skill)
-    expereince = models.IntegerField(default = 1)
+    experience   = models.IntegerField(default = 1)
     
  
 
