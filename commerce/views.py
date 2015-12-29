@@ -5,7 +5,8 @@ from commerce.models import Employee, Department, Skill, EmployeeSkill
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
-    EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer
+    EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer,\
+    DepartmentWritableSerializer
 
 
 class ReadNestedWriteFlatMixin(object):
@@ -43,17 +44,17 @@ class EmployeeViewSet( viewsets.ModelViewSet):
         return EmployeeSerializer
         #return get_massaged_serializer_class(EmployeeSerializer, self.request)
         
-class EmployeeWritableViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeWritableSerializer   
+class EmployeeWritableViewSet(EmployeeViewSet):
+    serializer_class = EmployeeWritableSerializer 
+    
+class EmployeeCompleteViewSet(EmployeeViewSet):
+    serializer_class = EmployeeSerializer  
    
 class EmployeeLookupViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeLookupSerializer
 
-class EmployeeCompleteViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+
     
 class EmployeeSkillViewSet(viewsets.ModelViewSet):
     queryset = EmployeeSkill.objects.all()
@@ -73,13 +74,9 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
-
-class DepartmentCompleteViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
+class DepartmentCompleteViewSet(DepartmentViewSet):
     serializer_class = FullDepartmentSerializer
     
-    
-class DepartmentWritableViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer   
+class DepartmentWritableViewSet(DepartmentViewSet):
+    serializer_class = DepartmentWritableSerializer
     

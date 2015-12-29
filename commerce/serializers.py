@@ -5,13 +5,62 @@ from commerce.models import Employee, Department, Skill, EmployeeSkill
 
 
 
+class EmployeeLookupSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Employee
+        fields = ('displayName', 'id', )
+
 class DepartmentLookupSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
 
     class Meta:
         model = Department
-        fields = ('displayName', 'id', )  
+        fields = ('displayName', 'id', )
+
+
+
+
+class SkillLookupSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Skill
+        fields = ('displayName', 'id', )
+
+class EmployeeSkillLookupSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = EmployeeSkill
+        fields = ('displayName', 'id', )
+        
+        
+class DepartmentSerializer(serializers.ModelSerializer):
+
+
+    displayName = serializers.ReadOnlyField()
+    
+
+    class Meta:
+        model = Department
+        
+        
+
+        
+
+class DepartmentWritableSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+    
+
+    class Meta:
+        model = Department
 
 class SkillSerializer(serializers.ModelSerializer):
     
@@ -20,15 +69,6 @@ class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
 
-
-
-class EmployeeLookupSerializer(serializers.ModelSerializer):
-    
-    displayName = serializers.ReadOnlyField()
-    
-    class Meta:
-        model = Employee
-        fields = ('displayName', 'id', )     
 
 class EmployeeSkillWritableSerializer(serializers.ModelSerializer):
 
@@ -66,7 +106,7 @@ class EmployeeWritableSerializer(serializers.ModelSerializer):
             EmployeeSkill.objects.create(employee=instance, **item)
         return super(EmployeeWritableSerializer, self).update( instance, validated_data)
         
-class EmployeeSerializer(  serializers.ModelSerializer,):
+class EmployeeSerializerOrg(  serializers.ModelSerializer,):
     department = DepartmentLookupSerializer()
     employeeSkills = EmployeeSkillSerializer(many=True)
     
@@ -74,20 +114,36 @@ class EmployeeSerializer(  serializers.ModelSerializer,):
         model = Employee
         #depth = 1
         
+class EmployeeSerializer(serializers.ModelSerializer):
+
+ 
+    department = DepartmentSerializer()
+ 
+
+    displayName = serializers.ReadOnlyField()
     
-class FullDepartmentSerializer(serializers.ModelSerializer):
+ 
+    employeeSkills = EmployeeSkillSerializer(many=True)
+ 
     
+    class Meta:
+        model = Employee
+        
+        
+class FullEmployeeSerializer(EmployeeSerializer):
+
+    class Meta(EmployeeSerializer.Meta):
+        model = Employee
+        
+class FullDepartmentSerializer(DepartmentSerializer):
+
+ 
     employees = EmployeeSerializer(many=True, read_only=True)
+ 
     
     class Meta(DepartmentSerializer.Meta):
-        model = Department
+        model = Department    
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    
-    displayName = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Department
         
 
 
