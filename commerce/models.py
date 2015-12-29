@@ -1,6 +1,8 @@
 
 from django.db import models
 
+from django_fsm import FSMField, transition
+
 import commerce
 
 
@@ -56,8 +58,30 @@ class Employee(Person):
     
     lastName = models.CharField(null = False, blank = True,  max_length=30)
     
+    state = FSMField(default='hired')
+    
     def __str__(self):
         return ''.join([self.firstName , ', ', self.lastName]);
+    
+    @transition(field=state, source='hired', target='active')
+    def join(self):
+        pass
+    
+    @transition(field=state, source='active', target='suspended')
+    def suspend(self):
+        pass
+    
+    @transition(field=state, source='active', target='left')
+    def leave(self):
+        pass
+    
+    @transition(field=state, source='[active, suspended]', target='terminated')
+    def terminate(self):
+        pass
+    
+    @transition(field=state, source='suspended', target='active')
+    def reinstate(self):
+        pass
     
     @property
     def displayName(self):

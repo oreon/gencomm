@@ -19,29 +19,25 @@ class QuestionMethodTests(TestCase):
         self.assertEqual(dep.displayName, 'dba')
 
 
-class AccountTests(APITestCase):
+class DepartmentTests(APITestCase):
     
     url = 'http://localhost:8000/api/v1/departments'
     
-    def create_account(self):
-        
+    def setUp(self):
+       self.create_department()
+    
+    def create_department(self):
         data = {'name': 'Dba'}
         response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response
     
     def test_create_department(self):
-        """
-        Ensure we can create a new account object.
-        """
-        response = self.create_account();
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Department.objects.count(), 1)
         self.assertEqual(Department.objects.get().displayName, 'Dba')
         print("created department {0}".format(Department.objects.get().id))
         
     def test_read_department(self):
-        
-        response = self.create_account();
         id = Department.objects.get().id
         print("found department {0}", id)
         url = self.url + "/" + str(id)
@@ -49,7 +45,7 @@ class AccountTests(APITestCase):
         self.assertEqual(response.data, {'id': 1, 'displayName': 'Dba', 'name': 'Dba'})
         
     def test_edit_department(self):
-        response = self.create_account();
+        
         id = Department.objects.get().id
         print("found department {0}", id)
         url = self.url + "/" + str(id)
