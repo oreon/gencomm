@@ -60,7 +60,7 @@ class DepartmentTests(APITestCase):
 class EmployeeTests(APITestCase):
     
     url = 'http://localhost:8000/api/v1/employees'
-    
+
     data =     {
             "department":1,
             "employeeSkills": [],
@@ -75,7 +75,7 @@ class EmployeeTests(APITestCase):
     def setUp(self):
         DepartmentTests().create_department(self.client)
         response = self.client.post(self.url, self.data, format='json')
-        #print(response.data)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response
     
@@ -106,5 +106,47 @@ class EmployeeTests(APITestCase):
         self.assertEqual( Employee.objects.get(id=1  ).displayName,'Mike, vivians')
         
         
+    def test_join_employee(self):
+        response = self.client.put(self.create_url() + "/join", None, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual( Employee.objects.get(id=1  ).state,'active')
         
         
+        
+class EmployeeTestsFixture(APITestCase):
+    
+    url = 'http://localhost:8000/api/v1/employees'
+    
+    fixtures = ['testdata.yaml']
+
+    data =     {
+            "department":1,
+            "employeeSkills": [],
+            #"displayName": "lomary, vivians",
+            "gender": "MALE",
+            "dob": "1988-11-05",
+            "firstName": "lomary",
+            "lastName": "vivians",
+            "state": "hired"
+        }
+    
+    def create_url(self, recordid=1):
+        return self.url + "/" + str(recordid)
+    
+    def read_employee(self, recordid=1):
+        return self.client.get(self.create_url(recordid))
+    
+        
+    def test_read_employee(self):
+        response = self.read_employee()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['lastName'], 'vivians')
+    
+        
+    def todo_edit_employee(self):
+        self.data['firstName'] = 'Mike'
+        self.data['id'] = 1
+        response = self.client.put(self.create_url(), self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Employee.objects.count(), 1)
+        self.assertEqual( Employee.objects.get(id=1).displayName,'Mike, vivians')

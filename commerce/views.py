@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django_fsm import get_available_FIELD_transitions
 from rest_framework import viewsets
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 
 from commerce.models import Employee, Department, Skill, EmployeeSkill
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
@@ -43,6 +46,15 @@ class EmployeeViewSet( viewsets.ModelViewSet):
     def get_serializer_class(self, *args, **kwargs):
         #return EmployeeSerializer
         return get_massaged_serializer_class(EmployeeSerializer,EmployeeWritableSerializer, self.request)
+    
+    @detail_route(methods=['put'])
+    def join(self,request, *args, **kwargs):
+        employee = self.get_object()
+        print(get_available_FIELD_transitions(employee, employee.state) )
+        employee.join()
+        employee.save()
+        return Response({'status': 'state changed'})
+        
         
 class EmployeeWritableViewSet(EmployeeViewSet):
     serializer_class = EmployeeWritableSerializer 

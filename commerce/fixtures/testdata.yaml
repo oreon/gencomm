@@ -1,0 +1,98 @@
+-   fields: {name: Accounts}
+    model: commerce.department
+    pk: 1
+    fields: {name: IT}
+    model: commerce.department
+    pk: 3
+-   fields: {name: Finance}
+    model: commerce.department
+    pk: 4
+-   fields: {name: HR}
+    model: commerce.department
+    pk: 5
+-   fields: {department: 5, dob: 1988-11-05, firstName: Mike, gender: MALE, lastName: vivians,state: hired}
+    model: commerce.employee
+    pk: 1
+-   fields: {department: 4, dob: 1988-11-01, firstName: Eric, gender: MALE, lastName: Roberts,
+        state: hired}
+    model: commerce.employee
+    pk: 10
+-   fields: {department: 5, dob: 1977-09-02, firstName: Vasim, gender: M, lastName: Slavo,
+        state: hired}
+    model: commerce.employee
+    pk: 11
+-   fields: {department: 5, dob: 1977-09-02, firstName: Meena, gender: M, lastName: Slavo,
+        state: hired}
+    model: commerce.employee
+    pk: 12
+-   fields: {department: 5, dob: 1977-09-02, firstName: Meena, gender: FEMALE, lastName: Slavo,
+        state: hired}
+    model: commerce.employee
+    pk: 13
+-   fields: {department: 4, dob: 1988-11-01, firstName: Erica, gender: M, lastName: Silva,
+        state: hired}
+    model: commerce.employee
+    pk: 14
+-   fields: {department: 3, dob: 1988-11-01, firstName: Larissa, gender: F, lastName: Kulmer,
+        state: hired}
+    model: commerce.employee
+    pk: 15
+-   fields: {department: 3, dob: 1988-11-01, firstName: john, gender: '', lastName: papa,
+        state: hired}
+    model: commerce.employee
+    pk: 16
+-   fields: {department: 3, dob: 1988-11-01, firstName: sylvia, gender: FEMALE, lastName: kosta,
+        state: hired}
+    model: commerce.employee
+    pk: 17
+-   fields: {name: Java}
+    model: commerce.skill
+    pk: 1
+-   fields: {name: SQL}
+    model: commerce.skill
+    pk: 2
+-   fields: {name: DtNet}
+    model: commerce.skill
+    pk: 3
+-   fields: {name: Mainfame}
+    model: commerce.skill
+    pk: 4
+-   fields: {name: Angular}
+    model: commerce.skill
+    pk: 5
+-   fields: {name: Hadoop}
+    model: commerce.skill
+    pk: 6
+-   fields: {name: spark}
+    model: commerce.skill
+    pk: 7
+-   fields: {name: Python}
+    model: commerce.skill
+    pk: 8
+-   fields: {name: Django}
+    model: commerce.skill
+    pk: 9
+-   fields: {name: MEAN stack}
+    model: commerce.skill
+    pk: 10
+-   fields: {name: QA}
+    model: commerce.skill
+    pk: 11
+-   fields: {name: Systems Admin}
+    model: commerce.skill
+    pk: 12
+-   fields: {employee: 1, experience: 4, skill: 4}
+    model: commerce.employeeskill
+    pk: 6
+-   fields: {employee: 1, experience: 2, skill: 5}
+    model: commerce.employeeskill
+    pk: 7
+-   fields: {employee: 10, experience: 5, skill: 1}
+    model: commerce.employeeskill
+    pk: 9
+-   fields: {employee: 13, experience: 2, skill: 3}
+    model: commerce.employeeskill
+    pk: 10
+-   fields: {employee: 13, experience: 3, skill: 4}
+    model: commerce.employeeskill
+    pk: 11

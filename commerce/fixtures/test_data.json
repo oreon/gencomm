@@ -1,0 +1,260 @@
+[
+{
+    "fields": {
+        "name": "IT"
+    },
+    "model": "commerce.department",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "Finance"
+    },
+    "model": "commerce.department",
+    "pk": 4
+},
+{
+    "fields": {
+        "name": "HR"
+    },
+    "model": "commerce.department",
+    "pk": 5
+},
+{
+    "fields": {
+        "dob": "1988-11-05",
+        "firstName": "Mike",
+        "lastName": "vivians",
+        "department": 5,
+        "gender": "MALE",
+        "state": "active"
+    },
+    "model": "commerce.employee",
+    "pk": 8
+},
+{
+    "fields": {
+        "dob": "1988-11-01",
+        "firstName": "Eric",
+        "lastName": "Roberts",
+        "department": 4,
+        "gender": "MALE",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 10
+},
+{
+    "fields": {
+        "dob": "1977-09-02",
+        "firstName": "Vasim",
+        "lastName": "Slavo",
+        "department": 5,
+        "gender": "M",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 11
+},
+{
+    "fields": {
+        "dob": "1977-09-02",
+        "firstName": "Meena",
+        "lastName": "Slavo",
+        "department": 5,
+        "gender": "M",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 12
+},
+{
+    "fields": {
+        "dob": "1977-09-02",
+        "firstName": "Meena",
+        "lastName": "Slavo",
+        "department": 5,
+        "gender": "FEMALE",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 13
+},
+{
+    "fields": {
+        "dob": "1988-11-01",
+        "firstName": "Erica",
+        "lastName": "Silva",
+        "department": 4,
+        "gender": "M",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 14
+},
+{
+    "fields": {
+        "dob": "1988-11-01",
+        "firstName": "Larissa",
+        "lastName": "Kulmer",
+        "department": 3,
+        "gender": "F",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 15
+},
+{
+    "fields": {
+        "dob": "1988-11-01",
+        "firstName": "john",
+        "lastName": "papa",
+        "department": 3,
+        "gender": "",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 16
+},
+{
+    "fields": {
+        "dob": "1988-11-01",
+        "firstName": "sylvia",
+        "lastName": "kosta",
+        "department": 3,
+        "gender": "FEMALE",
+        "state": "hired"
+    },
+    "model": "commerce.employee",
+    "pk": 17
+},
+{
+    "fields": {
+        "name": "Java"
+    },
+    "model": "commerce.skill",
+    "pk": 1
+},
+{
+    "fields": {
+        "name": "SQL"
+    },
+    "model": "commerce.skill",
+    "pk": 2
+},
+{
+    "fields": {
+        "name": "DtNet"
+    },
+    "model": "commerce.skill",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "Mainfame"
+    },
+    "model": "commerce.skill",
+    "pk": 4
+},
+{
+    "fields": {
+        "name": "Angular"
+    },
+    "model": "commerce.skill",
+    "pk": 5
+},
+{
+    "fields": {
+        "name": "Hadoop"
+    },
+    "model": "commerce.skill",
+    "pk": 6
+},
+{
+    "fields": {
+        "name": "spark"
+    },
+    "model": "commerce.skill",
+    "pk": 7
+},
+{
+    "fields": {
+        "name": "Python"
+    },
+    "model": "commerce.skill",
+    "pk": 8
+},
+{
+    "fields": {
+        "name": "Django"
+    },
+    "model": "commerce.skill",
+    "pk": 9
+},
+{
+    "fields": {
+        "name": "MEAN stack"
+    },
+    "model": "commerce.skill",
+    "pk": 10
+},
+{
+    "fields": {
+        "name": "QA"
+    },
+    "model": "commerce.skill",
+    "pk": 11
+},
+{
+    "fields": {
+        "name": "Systems Admin"
+    },
+    "model": "commerce.skill",
+    "pk": 12
+},
+{
+    "fields": {
+        "employee": 17,
+        "experience": 4,
+        "skill": 4
+    },
+    "model": "commerce.employeeskill",
+    "pk": 6
+},
+{
+    "fields": {
+        "employee": 17,
+        "experience": 2,
+        "skill": 5
+    },
+    "model": "commerce.employeeskill",
+    "pk": 7
+},
+{
+    "fields": {
+        "employee": 10,
+        "experience": 5,
+        "skill": 1
+    },
+    "model": "commerce.employeeskill",
+    "pk": 9
+},
+{
+    "fields": {
+        "employee": 13,
+        "experience": 2,
+        "skill": 3
+    },
+    "model": "commerce.employeeskill",
+    "pk": 10
+},
+{
+    "fields": {
+        "employee": 13,
+        "experience": 3,
+        "skill": 4
+    },
+    "model": "commerce.employeeskill",
+    "pk": 11
+}
+]
