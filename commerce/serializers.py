@@ -124,6 +124,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
     
  
     employeeSkills = EmployeeSkillSerializer(many=True)
+    
+    #def terminate(self):
+        
  
     
     class Meta:

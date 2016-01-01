@@ -5,7 +5,7 @@ from commerce.models import Employee, Department, Skill, EmployeeSkill
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
-    EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer,\
+    EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer, \
     DepartmentWritableSerializer
 
 
@@ -21,11 +21,11 @@ class ReadNestedWriteFlatMixin(object):
         return serializer_class
     
     
-def  get_massaged_serializer_class(serializer_class, request):
+def  get_massaged_serializer_class(serializer_class, writable_serializer_class, request):
         if request.method in ['PATCH', 'POST', 'PUT'] :
-            serializer_class.Meta.depth = 0
+            return writable_serializer_class
         else :
-            serializer_class.Meta.depth = 1
+            return serializer_class
         return serializer_class
 
 
@@ -41,8 +41,8 @@ class EmployeeViewSet( viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     
     def get_serializer_class(self, *args, **kwargs):
-        return EmployeeSerializer
-        #return get_massaged_serializer_class(EmployeeSerializer, self.request)
+        #return EmployeeSerializer
+        return get_massaged_serializer_class(EmployeeSerializer,EmployeeWritableSerializer, self.request)
         
 class EmployeeWritableViewSet(EmployeeViewSet):
     serializer_class = EmployeeWritableSerializer 

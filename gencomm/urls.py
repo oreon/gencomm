@@ -31,12 +31,11 @@ router.register(r'employees', EmployeeViewSet)
 router.register(r'employeesWritable', EmployeeWritableViewSet)
 router.register(r'employeesComplete', EmployeeCompleteViewSet)
 router.register(r'employeesLookup', EmployeeLookupViewSet)
-
 router.register(r'employeeSkills', EmployeeSkillViewSet)
 
 
 router.register(r'departmentsLookup', DepartmentLookupViewSet)
-router.register(r'departments', DepartmentViewSet)
+router.register(r'departments', DepartmentViewSet, base_name='departments')
 router.register(r'departmentsComplete', DepartmentCompleteViewSet)
 router.register(r'departmentsWritable', DepartmentWritableViewSet)
 
