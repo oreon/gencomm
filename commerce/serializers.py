@@ -1,7 +1,15 @@
 
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from commerce.models import Employee, Department, Skill, EmployeeSkill
+
+
+class UserSerializer(serializers.ModelSerializer):
+    #snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+
+    class Meta:
+        model = User
 
 
 
@@ -57,8 +65,8 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class DepartmentWritableSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField(source='owner.username')
     
-
     class Meta:
         model = Department
 

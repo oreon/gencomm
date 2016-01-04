@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 
 from commerce.models import Department, Employee
 
@@ -22,12 +23,20 @@ class DepartmentTests(APITestCase):
     
     url = 'http://localhost:8000/api/v1/departments'
     
+    fixtures = ['users.yaml']
+    
     def setUp(self):
-       self.create_department(self.client)
+        self.create_department(self.client)
+        client = APIClient()
+        client.login(username='admin', password='mohali')
+
     
     def create_department(self, client):
         #self.url = reverse('departments')  TODO : 
         data = {'name': 'Dba'}
+        #client.login(username='admin', password='mohali')
+        user = User.objects.get(username='admin')
+        client.force_authenticate(user=user)
         response = client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response
@@ -42,7 +51,7 @@ class DepartmentTests(APITestCase):
         print("found department {0}", id)
         url = self.url + "/" + str(id)
         response = self.client.get(url, format='json')
-        self.assertEqual(response.data, {'id': 1, 'displayName': 'Dba', 'name': 'Dba'})
+        self.assertEqual(response.data['displayName']  ,'Dba')
         
     def test_edit_department(self):
         
@@ -58,7 +67,7 @@ class DepartmentTests(APITestCase):
     
         
 class EmployeeTests(APITestCase):
-    
+    fixtures = ['users.yaml']
     url = 'http://localhost:8000/api/v1/employees'
 
     data =     {
@@ -117,7 +126,7 @@ class EmployeeTestsFixture(APITestCase):
     
     url = 'http://localhost:8000/api/v1/employees'
     
-    fixtures = ['testdata.yaml']
+    fixtures = ['users.yaml','testdata.yaml']
 
     data =     {
             "department":1,

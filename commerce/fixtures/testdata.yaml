@@ -1,48 +1,62 @@
--   fields: {name: Accounts}
+-   fields: {added: !!timestamp '2016-01-04 12:53:54.395859+00:00', name: IT, owner: 1,
+        updated: !!timestamp '2016-01-04 12:54:14.236379+00:00'}
     model: commerce.department
     pk: 1
-    fields: {name: IT}
+    fields: {added: !!timestamp '2016-01-04 12:53:54.395859+00:00', name: ITES, owner: 1,
+        updated: !!timestamp '2016-01-04 12:54:14.236379+00:00'}
     model: commerce.department
     pk: 3
--   fields: {name: Finance}
+-   fields: {added: !!timestamp '2016-01-04 12:53:54.395859+00:00', name: Finance,
+        owner: 1, updated: !!timestamp '2016-01-04 12:54:14.236379+00:00'}
     model: commerce.department
     pk: 4
--   fields: {name: HR}
+-   fields: {added: !!timestamp '2016-01-04 12:53:54.395859+00:00', name: HR, owner: 1,
+        updated: !!timestamp '2016-01-04 12:54:14.236379+00:00'}
     model: commerce.department
     pk: 5
--   fields: {department: 5, dob: 1988-11-05, firstName: Mike, gender: MALE, lastName: vivians,state: hired}
+    fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 3,
+        dob: 1988-11-05, firstName: Mike, gender: MALE, lastName: vivians, owner: 1,
+        state: active, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 1
--   fields: {department: 4, dob: 1988-11-01, firstName: Eric, gender: MALE, lastName: Roberts,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
+        dob: 1988-11-01, firstName: Eric, gender: MALE, lastName: Roberts, owner: 1,
+        state: hired, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 10
--   fields: {department: 5, dob: 1977-09-02, firstName: Vasim, gender: M, lastName: Slavo,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
+        dob: 1977-09-02, firstName: Vasim, gender: M, lastName: Slavo, owner: 1, state: hired,
+        updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 11
--   fields: {department: 5, dob: 1977-09-02, firstName: Meena, gender: M, lastName: Slavo,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
+        dob: 1977-09-02, firstName: Meena, gender: M, lastName: Slavo, owner: 1, state: hired,
+        updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 12
--   fields: {department: 5, dob: 1977-09-02, firstName: Meena, gender: FEMALE, lastName: Slavo,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
+        dob: 1977-09-02, firstName: Meena, gender: FEMALE, lastName: Slavo, owner: 1,
+        state: hired, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 13
--   fields: {department: 4, dob: 1988-11-01, firstName: Erica, gender: M, lastName: Silva,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
+        dob: 1988-11-01, firstName: Erica, gender: M, lastName: Silva, owner: 1, state: hired,
+        updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 14
--   fields: {department: 3, dob: 1988-11-01, firstName: Larissa, gender: F, lastName: Kulmer,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 3,
+        dob: 1988-11-01, firstName: Larissa, gender: F, lastName: Kulmer, owner: 1,
+        state: hired, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 15
--   fields: {department: 3, dob: 1988-11-01, firstName: john, gender: '', lastName: papa,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 3,
+        dob: 1988-11-01, firstName: john, gender: '', lastName: papa, owner: 1, state: hired,
+        updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 16
--   fields: {department: 3, dob: 1988-11-01, firstName: sylvia, gender: FEMALE, lastName: kosta,
-        state: hired}
+-   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 3,
+        dob: 1988-11-01, firstName: sylvia, gender: FEMALE, lastName: kosta, owner: 1,
+        state: hired, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 17
 -   fields: {name: Java}

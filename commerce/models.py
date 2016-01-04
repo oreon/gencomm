@@ -1,6 +1,8 @@
 
-from django.db import models
+from datetime import timezone
+import datetime
 
+from django.db import models
 from django_fsm import FSMField, transition
 
 import commerce
@@ -25,8 +27,18 @@ Gender = (
     ('U', 'Unknown'),
 )
 
+class BaseModel(models.Model):
+    
+    owner = models.ForeignKey('auth.User', null = False, blank = True)
+    added = models.DateTimeField(auto_now_add=True, null = False, blank = True)
+    updated = models.DateTimeField(auto_now=True, null = False, blank = True)
+    
+    class Meta:
+        abstract = True
+    #serializer.save(owner=self.request.user)
 
-class Person(models.Model): 
+
+class Person(BaseModel): 
 
     gender = models.CharField(max_length=1, choices=Gender, null = False, blank = True)
     dob = models.DateField(null = False, blank = True, )
@@ -36,9 +48,9 @@ class Person(models.Model):
     class Meta:
         abstract = True
 
+        
 
-
-class Department(models.Model): 
+class Department(BaseModel): 
 
     name = models.CharField(null = False, blank = True,  max_length=30)
     

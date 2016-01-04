@@ -1,0 +1,15 @@
+-   fields:
+        date_joined: 2016-01-04 11:45:22.070206+00:00
+        email: sj@ss.com
+        first_name: ''
+        groups: []
+        is_active: true
+        is_staff: true
+        is_superuser: true
+        last_login: null
+        last_name: ''
+        password: pbkdf2_sha256$20000$fL9QeVJQLS3b$p3eq9Pn36Q0iFvCIUBaF2fK9dlU/4IEyn1tYFUgUO2w=
+        user_permissions: []
+        username: admin
+    model: auth.user
+    pk: 1

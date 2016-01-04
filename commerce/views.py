@@ -43,6 +43,9 @@ class SkillViewSet( viewsets.ModelViewSet):
 class EmployeeViewSet( viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+    
     def get_serializer_class(self, *args, **kwargs):
         #return EmployeeSerializer
         return get_massaged_serializer_class(EmployeeSerializer,EmployeeWritableSerializer, self.request)
@@ -84,7 +87,13 @@ class DepartmentLookupViewSet(viewsets.ModelViewSet):
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+    
+    def get_serializer_class(self, *args, **kwargs):
+        #return EmployeeSerializer
+        return get_massaged_serializer_class(DepartmentSerializer, DepartmentWritableSerializer, self.request)
 
 class DepartmentCompleteViewSet(DepartmentViewSet):
     serializer_class = FullDepartmentSerializer
