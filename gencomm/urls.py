@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic.base import TemplateView
 from rest_framework import routers
 
 from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     EmployeeCompleteViewSet, SkillViewSet, EmployeeSkillViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
+from basicauth.views import UserViewSet
 
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -39,11 +41,39 @@ router.register(r'departments', DepartmentViewSet, base_name='departments')
 router.register(r'departmentsComplete', DepartmentCompleteViewSet)
 router.register(r'departmentsWritable', DepartmentWritableViewSet)
 
+router.register(r'appusers', UserViewSet)
+
+
 
 
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    
+    
+    url(r'^signup/$', TemplateView.as_view(template_name="signup.html"),
+        name='signup'),
+    url(r'^email-verification/$',
+        TemplateView.as_view(template_name="email_verification.html"),
+        name='email-verification'),
+    url(r'^login/$', TemplateView.as_view(template_name="login.html"),
+        name='login'),
+    url(r'^password-reset/$',
+        TemplateView.as_view(template_name="password_reset.html"),
+        name='password-reset'),
+    url(r'^password-reset/confirm/$',
+        TemplateView.as_view(template_name="password_reset_confirm.html"),
+        name='password-reset-confirm'),
+
+    url(r'^user-details/$',
+        TemplateView.as_view(template_name="user_details.html"),
+        name='user-details'),
+    url(r'^password-change/$',
+        TemplateView.as_view(template_name="password_change.html"),
+        name='password-change'),
 ]

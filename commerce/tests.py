@@ -26,17 +26,16 @@ class DepartmentTests(APITestCase):
     fixtures = ['users.yaml']
     
     def setUp(self):
+        user = User.objects.get(username='jag')
+        self.client.force_authenticate(user=user)
         self.create_department(self.client)
-        client = APIClient()
-        client.login(username='admin', password='mohali')
 
     
     def create_department(self, client):
         #self.url = reverse('departments')  TODO : 
         data = {'name': 'Dba'}
         #client.login(username='admin', password='mohali')
-        user = User.objects.get(username='admin')
-        client.force_authenticate(user=user)
+        
         response = client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return response
@@ -81,7 +80,16 @@ class EmployeeTests(APITestCase):
             "state": "hired"
         }
     
+    def login(self,usernm='jag'):
+        self.client.logout()
+        user = User.objects.get(username=usernm)
+        self.client.force_authenticate(user=user)
+    
     def setUp(self):
+        self.login();
+        self.create_employee()
+        
+    def create_employee(self):
         DepartmentTests().create_department(self.client)
         response = self.client.post(self.url, self.data, format='json')
         print(response.data)
@@ -112,7 +120,17 @@ class EmployeeTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Employee.objects.count(), 1)
+        self.assertEqual( Employee.objects.get(id=1).displayName,'Mike, vivians')
+    
+    def test_edit_employee_permission(self):
+        self.login('alice');
+        self.data['firstName'] = 'Jane'
+        self.data['id'] = 1
+        response = self.client.put(self.create_url(), self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Employee.objects.count(), 1)
         self.assertEqual( Employee.objects.get(id=1  ).displayName,'Mike, vivians')
+    
         
         
     def test_join_employee(self):

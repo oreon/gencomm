@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django_fsm import get_available_FIELD_transitions
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from commerce.models import Employee, Department, Skill, EmployeeSkill
+from commerce.permissions import IsOwnerOrReadOnly
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
@@ -42,6 +43,8 @@ class SkillViewSet( viewsets.ModelViewSet):
 # Create your views here.
 class EmployeeViewSet( viewsets.ModelViewSet):
     queryset = Employee.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                      IsOwnerOrReadOnly,)
     
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
