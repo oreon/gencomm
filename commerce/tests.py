@@ -17,117 +17,116 @@ class QuestionMethodTests(TestCase):
         
         dep = Department(name='dba')
         self.assertEqual(dep.displayName, 'dba')
-
-
-class DepartmentTests(APITestCase):
-    
-    url = 'http://localhost:8000/api/v1/departments'
-    
-    fixtures = ['users.yaml']
-    
-    def setUp(self):
-        user = User.objects.get(username='jag')
-        self.client.force_authenticate(user=user)
-        self.create_department(self.client)
-
-    
-    def create_department(self, client):
-        #self.url = reverse('departments')  TODO : 
-        data = {'name': 'Dba'}
-        #client.login(username='admin', password='mohali')
         
-        response = client.post(self.url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        return response
-    
-    def test_create_department(self):
-        self.assertEqual(Department.objects.count(), 1)
-        self.assertEqual(Department.objects.get().displayName, 'Dba')
-        print("created department {0}".format(Department.objects.get().id))
-        
-    def test_read_department(self):
-        id = Department.objects.get().id
-        print("found department {0}", id)
-        url = self.url + "/" + str(id)
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.data['displayName']  ,'Dba')
-        
-    def test_edit_department(self):
-        
-        id = Department.objects.get().id
-        print("found department {0}", id)
-        url = self.url + "/" + str(id)
-        newdep = {'id': 1, 'displayName': 'Dba', 'name': 'DBA2'}
-        response = self.client.put(url, newdep, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Department.objects.count(), 1)
-        self.assertEqual(Department.objects.get().displayName, 'DBA2')
-        
-    
-        
-class EmployeeTests(APITestCase):
-    fixtures = ['users.yaml']
-    url = 'http://localhost:8000/api/v1/employees'
-
-    data =     {
+empdata =     {
             "department":1,
             "employeeSkills": [],
-            #"displayName": "lomary, vivians",
             "gender": "MALE",
             "dob": "1988-11-05",
             "firstName": "lomary",
             "lastName": "vivians",
-            "state": "hired"
         }
+        
+
+class BaseTest(APITestCase):
     
     def login(self,usernm='jag'):
         self.client.logout()
         user = User.objects.get(username=usernm)
         self.client.force_authenticate(user=user)
+        
+    baseurl = 'http://localhost:8000/api/v1/'
+
+    def create_url(self, recordid=1, suffix=None):
+        suff = ''
+        if (suffix):
+            suff = "/" + suffix
+        return self.url + "/" + str(recordid) + suff
+    
+    def read_one_record(self, recordid=1, suffix=None):
+        return self.client.get(self.create_url(recordid, suffix))
+
+
+class DepartmentTests(BaseTest):
+    
+    url = 'departments'
+    
+    fixtures = ['users.yaml','testdata.yaml']
     
     def setUp(self):
-        self.login();
-        self.create_employee()
+        self.login()
+        self.url = self.baseurl + 'departments'
         
-    def create_employee(self):
-        DepartmentTests().create_department(self.client)
-        response = self.client.post(self.url, self.data, format='json')
+    def test_read_department(self):
+        response = self.client.get(self.create_url(recordid=3))
         print(response.data)
+        self.assertEqual(response.data['name']  ,'ITES')
+
+    def test_edit_department(self):
+        data = self.read_one_record(suffix='writable',recordid=3).data
+        data['name'] = 'IT-2'
+        response = self.client.put(self.create_url(recordid=3), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.data)
+        self.assertEqual(data['name'], 'IT-2')
+
+    
+    def test_create_department(self):
+        data = self.read_one_record(suffix='writable',recordid=3).data
+        data['id'] = None 
+        response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        return response
     
-    def create_url(self, recordid=1):
-        return self.url + "/" + str(recordid)
+        
+    def test_read_department_complete(self):
+        self.client.post(self.baseurl + 'employees', empdata)
+        response = self.client.get(self.create_url(suffix ='complete',recordid=3))
+        self.assertEqual(len(response.data['employees'] ) ,4)
+        
+
+        
+class EmployeeTests(BaseTest):
     
-    def read_employee(self, recordid=1):
-        return self.client.get(self.create_url(recordid))
-        #self.assertEqual(response.data['displayName'], 'lomary, vivians')
+    url = 'http://localhost:8000/api/v1/employees'
     
-    def test_create_employee(self):
-        self.assertEqual(Employee.objects.count(), 1)
-        self.assertEqual(Employee.objects.get(id=1 ).displayName, 'lomary, vivians')
+    fixtures = ['users.yaml','testdata.yaml']
+    
+    def setUp(self):
+        self.login()
+        self.url = self.baseurl + 'employees'
+
         
     def test_read_employee(self):
-        response = self.read_employee()
+        response = self.read_one_record()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['lastName'], 'vivians')
+        self.assertEqual(response.data['department']['name'], 'ITES')
+        
+    def test_get_writable(self):
+        response = self.read_one_record(suffix='writable')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['department'], 3) 
         
     def test_edit_employee(self):
-        self.data['firstName'] = 'Mike'
-        self.data['id'] = 1
-        response = self.client.put(self.create_url(), self.data, format='json')
-
+        data = self.read_one_record(suffix='writable').data
+        data['firstName'] = 'Mikey'
+        response = self.client.put(self.create_url(), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Employee.objects.count(), 1)
-        self.assertEqual( Employee.objects.get(id=1).displayName,'Mike, vivians')
-    
+        self.assertEqual( Employee.objects.get(id=1).displayName,'Mikey, vivians')
+        
+    def test_create_employee(self):
+        response = self.read_one_record(suffix='writable')
+        data = response.data
+        data['id'] = None
+        response = self.client.post(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)    
+        
     def test_edit_employee_permission(self):
         self.login('alice');
-        self.data['firstName'] = 'Jane'
-        self.data['id'] = 1
-        response = self.client.put(self.create_url(), self.data, format='json')
+        empdata['firstName'] = 'Jane'
+        empdata['id'] = 1
+        response = self.client.put(self.create_url(), empdata)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Employee.objects.count(), 1)
         self.assertEqual( Employee.objects.get(id=1  ).displayName,'Mike, vivians')
     
     
@@ -135,49 +134,10 @@ class EmployeeTests(APITestCase):
         response = self.client.put(self.create_url() + "/join", None)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual( Employee.objects.get(id=1).state,'active')
-        
+    
     def test_getAvailableStateTransitions_afterjoin(self):
         self.client.put(self.create_url() + "/join", None)
         response = self.client.get(self.create_url() + "/getAvailableStateTransitions", None)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, ["leave", "suspend"], "Incorrect states")
-    
-        
-        
-class EmployeeTestsFixture(APITestCase):
-    
-    url = 'http://localhost:8000/api/v1/employees'
-    
-    fixtures = ['users.yaml','testdata.yaml']
-
-    data =     {
-            "department":1,
-            "employeeSkills": [],
-            #"displayName": "lomary, vivians",
-            "gender": "MALE",
-            "dob": "1988-11-05",
-            "firstName": "lomary",
-            "lastName": "vivians",
-            "state": "hired"
-        }
-    
-    def create_url(self, recordid=1):
-        return self.url + "/" + str(recordid)
-    
-    def read_employee(self, recordid=1):
-        return self.client.get(self.create_url(recordid))
-    
-        
-    def test_read_employee(self):
-        response = self.read_employee()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['lastName'], 'vivians')
-    
-        
-    def todo_edit_employee(self):
-        self.data['firstName'] = 'Mike'
-        self.data['id'] = 1
-        response = self.client.put(self.create_url(), self.data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Employee.objects.count(), 1)
-        self.assertEqual( Employee.objects.get(id=1).displayName,'Mike, vivians')
+            

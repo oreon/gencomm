@@ -60,8 +60,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
         
         
 
-        
-
 class DepartmentWritableSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
@@ -123,20 +121,12 @@ class EmployeeSerializerOrg(  serializers.ModelSerializer,):
         #depth = 1
         
 class EmployeeSerializer(serializers.ModelSerializer):
-
  
     department = DepartmentSerializer()
- 
-
     displayName = serializers.ReadOnlyField()
-    
- 
     employeeSkills = EmployeeSkillSerializer(many=True)
     
-    #def terminate(self):
-        
- 
-    
+    #def terminate(self):    
     class Meta:
         model = Employee
         

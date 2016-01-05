@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django_fsm import get_available_FIELD_transitions, \
     get_available_user_FIELD_transitions
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
@@ -11,7 +11,7 @@ from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
     EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer, \
-    DepartmentWritableSerializer
+    DepartmentWritableSerializer, FullEmployeeSerializer, SkillLookupSerializer
 
 
 class ReadNestedWriteFlatMixin(object):
@@ -26,13 +26,7 @@ class ReadNestedWriteFlatMixin(object):
         return serializer_class
     
     
-def  get_massaged_serializer_class(serializer_class, writable_serializer_class, request):
-        if request.method in ['PATCH', 'POST', 'PUT'] :
-            return writable_serializer_class
-        else :
-            return serializer_class
-        return serializer_class
-    
+
 class BaseViewSet( viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
@@ -43,6 +37,17 @@ class BaseViewSet( viewsets.ModelViewSet):
             return writable_serializer_class
         else :
             return serializer_class
+        
+    @detail_route(methods=['get'])
+    def complete(self,request, *args, **kwargs):
+        self.method = 'complete'
+        return self.retrieve(request, *args, **kwargs)
+        
+    
+    @detail_route(methods=['get'])
+    def writable(self,request, *args, **kwargs):
+        self.method = 'writable'
+        return self.retrieve(request, *args, **kwargs)
         
         
     def getTransitionsForState(self, state):
@@ -57,22 +62,38 @@ class BaseViewSet( viewsets.ModelViewSet):
         return Response(retlist)    
 
 # Create your views here.
-class SkillViewSet( viewsets.ModelViewSet):
-    queryset = Skill.objects.all()
+
     
-    def get_serializer_class(self, *args, **kwargs):
-        return SkillSerializer
+class MultiSerializerViewSetMixin(object):
+    
+    def get_serializer_class(self):
+        if self.request.method in ['PATCH', 'POST', 'PUT'] :
+            return self.get_serializer_class_dict('writable')
+        else :
+            return self.get_serializer_class_dict(self.action)
+
+    
+    def get_serializer_class_dict(self, action):
+        try:
+            return self.serializer_classes[action]
+        except (KeyError, AttributeError):
+            return super(MultiSerializerViewSetMixin, self).get_serializer_class()
+    
 
 # Create your views here.
-class EmployeeViewSet( BaseViewSet):
+class EmployeeViewSet(MultiSerializerViewSetMixin, BaseViewSet):
     queryset = Employee.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                       IsOwnerOrReadOnly,)
     
-    def get_serializer_class(self, *args, **kwargs):
-        return self.get_massaged_serializer_class( EmployeeSerializer,EmployeeWritableSerializer)
+    serializer_class = EmployeeSerializer
     
-    @detail_route(methods=['put'])
+    serializer_classes = {
+               'writable': EmployeeWritableSerializer,
+               'complete': FullEmployeeSerializer,
+            }
+    
+    @detail_route(methods=['put','get'])
     def join(self,request, *args, **kwargs):
         employee = self.get_object()
         employee.join()
@@ -110,15 +131,16 @@ class DepartmentLookupViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentLookupSerializer
 
-class DepartmentViewSet(viewsets.ModelViewSet):
+class DepartmentViewSet(MultiSerializerViewSetMixin,BaseViewSet):
     queryset = Department.objects.all()
     
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    serializer_class = DepartmentSerializer
     
-    def get_serializer_class(self, *args, **kwargs):
-        #return EmployeeSerializer
-        return get_massaged_serializer_class(DepartmentSerializer, DepartmentWritableSerializer, self.request)
+    serializer_classes = {
+               'writable': DepartmentWritableSerializer,
+               'complete': FullDepartmentSerializer,
+            }
+
 
 class DepartmentCompleteViewSet(DepartmentViewSet):
     serializer_class = FullDepartmentSerializer
@@ -126,3 +148,13 @@ class DepartmentCompleteViewSet(DepartmentViewSet):
 class DepartmentWritableViewSet(DepartmentViewSet):
     serializer_class = DepartmentWritableSerializer
     
+class SkillLookupViewSet(viewsets.ModelViewSet):
+    page_size = 10000
+    queryset = Skill.objects.all()
+    serializer_class = SkillLookupSerializer
+    
+class SkillViewSet( viewsets.ModelViewSet):
+    queryset = Skill.objects.all()
+    
+    def get_serializer_class(self, *args, **kwargs):
+        return SkillSerializer

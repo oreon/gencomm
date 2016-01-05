@@ -15,8 +15,8 @@
     model: commerce.department
     pk: 5
     fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 3,
-        dob: 1988-11-05, firstName: Mike, gender: MALE, lastName: vivians, owner: 1,
-        state: active, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
+        dob: 1988-11-05, firstName: Mike, gender: MALE, lastName: vivians, owner: 2,
+        state: hired, updated: !!timestamp '2016-01-04 12:54:28.301665+00:00'}
     model: commerce.employee
     pk: 1
 -   fields: {added: !!timestamp '2016-01-04 12:54:19.139001+00:00', department: 4,
