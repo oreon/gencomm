@@ -106,7 +106,6 @@ class EmployeeTests(APITestCase):
     def test_create_employee(self):
         self.assertEqual(Employee.objects.count(), 1)
         self.assertEqual(Employee.objects.get(id=1 ).displayName, 'lomary, vivians')
-        print("created emplolyee {0}".format(Employee.objects.get().id))
         
     def test_read_employee(self):
         response = self.read_employee()
@@ -131,12 +130,18 @@ class EmployeeTests(APITestCase):
         self.assertEqual(Employee.objects.count(), 1)
         self.assertEqual( Employee.objects.get(id=1  ).displayName,'Mike, vivians')
     
-        
-        
+    
     def test_join_employee(self):
-        response = self.client.put(self.create_url() + "/join", None, format='json')
+        response = self.client.put(self.create_url() + "/join", None)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual( Employee.objects.get(id=1  ).state,'active')
+        self.assertEqual( Employee.objects.get(id=1).state,'active')
+        
+    def test_getAvailableStateTransitions_afterjoin(self):
+        self.client.put(self.create_url() + "/join", None)
+        response = self.client.get(self.create_url() + "/getAvailableStateTransitions", None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, ["suspend","leave"], "Incorrect states")
+    
         
         
         

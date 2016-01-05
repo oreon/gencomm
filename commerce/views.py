@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django_fsm import get_available_FIELD_transitions
+from django_fsm import get_available_FIELD_transitions, \
+    get_available_user_FIELD_transitions
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -31,6 +32,18 @@ def  get_massaged_serializer_class(serializer_class, writable_serializer_class, 
         else :
             return serializer_class
         return serializer_class
+    
+class BaseViewSet( viewsets.ModelViewSet):
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+        
+    def  get_massaged_serializer_class(self, serializer_class, writable_serializer_class):
+        if self.request.method in ['PATCH', 'POST', 'PUT'] :
+            return writable_serializer_class
+        else :
+            return serializer_class
+
 
 
 # Create your views here.
@@ -41,25 +54,30 @@ class SkillViewSet( viewsets.ModelViewSet):
         return SkillSerializer
 
 # Create your views here.
-class EmployeeViewSet( viewsets.ModelViewSet):
+class EmployeeViewSet( BaseViewSet):
     queryset = Employee.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                       IsOwnerOrReadOnly,)
     
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-    
     def get_serializer_class(self, *args, **kwargs):
-        #return EmployeeSerializer
-        return get_massaged_serializer_class(EmployeeSerializer,EmployeeWritableSerializer, self.request)
+        return self.get_massaged_serializer_class( EmployeeSerializer,EmployeeWritableSerializer)
     
     @detail_route(methods=['put'])
     def join(self,request, *args, **kwargs):
         employee = self.get_object()
-        print(get_available_FIELD_transitions(employee, employee.state) )
         employee.join()
         employee.save()
         return Response({'status': 'state changed'})
+    
+    @detail_route()
+    def getAvailableStateTransitions(self, request, *args, **kwargs):
+        employee = self.get_object()
+        lst = list(get_available_user_FIELD_transitions(employee, request.user, employee._meta.get_field('state')) )
+        retlist = []
+        for i in lst:
+            retlist.append(i.name)
+    
+        return Response(retlist)
         
         
 class EmployeeWritableViewSet(EmployeeViewSet):
