@@ -43,8 +43,18 @@ class BaseViewSet( viewsets.ModelViewSet):
             return writable_serializer_class
         else :
             return serializer_class
-
-
+        
+        
+    def getTransitionsForState(self, state):
+        obj = self.get_object()
+        lst = list(get_available_user_FIELD_transitions(obj, self.request.user, obj._meta.get_field(state)) )
+        retlist = []
+        for i in lst:
+            retlist.append(i.name)
+            
+        retlist.sort()
+    
+        return Response(retlist)    
 
 # Create your views here.
 class SkillViewSet( viewsets.ModelViewSet):
@@ -71,13 +81,7 @@ class EmployeeViewSet( BaseViewSet):
     
     @detail_route()
     def getAvailableStateTransitions(self, request, *args, **kwargs):
-        employee = self.get_object()
-        lst = list(get_available_user_FIELD_transitions(employee, request.user, employee._meta.get_field('state')) )
-        retlist = []
-        for i in lst:
-            retlist.append(i.name)
-    
-        return Response(retlist)
+        return self.getTransitionsForState('state')
         
         
 class EmployeeWritableViewSet(EmployeeViewSet):

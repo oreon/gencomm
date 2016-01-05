@@ -140,9 +140,8 @@ class EmployeeTests(APITestCase):
         self.client.put(self.create_url() + "/join", None)
         response = self.client.get(self.create_url() + "/getAvailableStateTransitions", None)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, ["suspend","leave"], "Incorrect states")
+        self.assertEqual(response.data, ["leave", "suspend"], "Incorrect states")
     
-        
         
         
 class EmployeeTestsFixture(APITestCase):
