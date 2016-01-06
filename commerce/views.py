@@ -149,7 +149,7 @@ class DepartmentWritableViewSet(DepartmentViewSet):
     serializer_class = DepartmentWritableSerializer
     
 class SkillLookupViewSet(viewsets.ModelViewSet):
-    page_size = 10000
+    
     queryset = Skill.objects.all()
     serializer_class = SkillLookupSerializer
     

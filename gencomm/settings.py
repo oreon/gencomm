@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'rest_auth',
     'corsheaders',
     'commerce',
+    'patients',
     'main',
 )
 

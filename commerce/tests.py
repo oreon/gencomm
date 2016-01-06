@@ -79,11 +79,10 @@ class DepartmentTests(BaseTest):
     
         
     def test_read_department_complete(self):
-        self.client.post(self.baseurl + 'employees', empdata)
         response = self.client.get(self.create_url(suffix ='complete',recordid=3))
         self.assertEqual(len(response.data['employees'] ) ,4)
         
-
+        
         
 class EmployeeTests(BaseTest):
     

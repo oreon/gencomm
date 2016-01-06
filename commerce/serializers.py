@@ -35,6 +35,7 @@ class DepartmentLookupSerializer(serializers.ModelSerializer):
 class SkillLookupSerializer(serializers.ModelSerializer):
     
     displayName = serializers.ReadOnlyField()
+    page_size = 10000
 
     class Meta:
         model = Skill

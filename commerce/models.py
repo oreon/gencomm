@@ -6,6 +6,8 @@ from django.db import models
 from django_fsm import FSMField, transition
 
 import commerce
+from commerce.modelsBase import BaseModel
+from commerce.modelsBase import DepartmentBase
 
 
 class Address(models.Model): 
@@ -27,21 +29,16 @@ Gender = (
     ('U', 'Unknown'),
 )
 
-class BaseModel(models.Model):
-    
-    owner = models.ForeignKey('auth.User', null = False, blank = True)
-    added = models.DateTimeField(auto_now_add=True, null = False, blank = True)
-    updated = models.DateTimeField(auto_now=True, null = False, blank = True)
-    
-    class Meta:
-        abstract = True
-    #serializer.save(owner=self.request.user)
+
 
 
 class Person(BaseModel): 
 
     gender = models.CharField(max_length=1, choices=Gender, null = False, blank = True)
     dob = models.DateField(null = False, blank = True, )
+    
+    firstName = models.CharField(null = False, blank = True,  max_length=30)
+    lastName = models.CharField(null = False, blank = True,  max_length=30)
     
     #address = models.ForeignKey(Address, related_name='person')
      
@@ -50,9 +47,9 @@ class Person(BaseModel):
 
         
 
-class Department(BaseModel): 
+class Department(DepartmentBase): 
 
-    name = models.CharField(null = False, blank = True,  max_length=30)
+    #name = models.CharField(null = False, blank = True,  max_length=30)
     
     def __str__(self):
         return ''.join(self.name)
@@ -65,10 +62,6 @@ class Department(BaseModel):
 class Employee(Person): 
 
     department = models.ForeignKey(Department, related_name='employees')
-    
-    firstName = models.CharField(null = False, blank = True,  max_length=30)
-    
-    lastName = models.CharField(null = False, blank = True,  max_length=30)
     
     state = FSMField(default='hired')
     

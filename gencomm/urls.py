@@ -18,16 +18,20 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from rest_framework import routers
 
+from basicauth.views import UserViewSet
 from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
-    EmployeeCompleteViewSet, SkillViewSet, EmployeeSkillViewSet
+    EmployeeCompleteViewSet, SkillViewSet, EmployeeSkillViewSet, \
+    SkillLookupViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
-from basicauth.views import UserViewSet
+from patients.views import PatientViewSet, BedViewSet
 
 
 router = routers.SimpleRouter(trailing_slash=False)
 
 router.register(r'skills', SkillViewSet)
+router.register(r'skillsLookup', SkillLookupViewSet)
+
 
 router.register(r'employees', EmployeeViewSet)
 router.register(r'employeesWritable', EmployeeWritableViewSet)
@@ -43,6 +47,8 @@ router.register(r'departmentsWritable', DepartmentWritableViewSet)
 
 router.register(r'appusers', UserViewSet)
 
+router.register(r'patients', PatientViewSet)
+router.register(r'beds', BedViewSet)
 
 
 

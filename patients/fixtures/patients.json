@@ -1,0 +1,81 @@
+[
+{
+    "pk": 1,
+    "fields": {
+        "state": "outpatient",
+        "updated": "2016-01-06T18:49:09.950Z",
+        "owner": 1,
+        "dob": "1976-09-28",
+        "gender": "MALE",
+        "added": "2016-01-06T18:49:09.950Z",
+        "lastName": "Singh",
+        "firstName": "Jag"
+    },
+    "model": "patients.patient"
+},
+{
+    "pk": 2,
+    "fields": {
+        "state": "outpatient",
+        "updated": "2016-01-06T18:49:54.700Z",
+        "owner": 1,
+        "dob": "1991-09-28",
+        "gender": "FEMALE",
+        "added": "2016-01-06T18:49:54.700Z",
+        "lastName": "Vybornykh",
+        "firstName": "Chris"
+    },
+    "model": "patients.patient"
+},
+{
+    "pk": 3,
+    "fields": {
+        "state": "outpatient",
+        "updated": "2016-01-06T18:50:23.256Z",
+        "owner": 1,
+        "dob": "2008-09-28",
+        "gender": "FEMALE",
+        "added": "2016-01-06T18:50:23.256Z",
+        "lastName": "Kaur",
+        "firstName": "Nehchal"
+    },
+    "model": "patients.patient"
+},
+{
+    "pk": 1,
+    "fields": {
+        "state": "free",
+        "updated": "2016-01-06T18:51:00.124Z",
+        "owner": 1,
+        "name": "B1",
+        "added": "2016-01-06T18:51:00.124Z",
+        "price": 15
+    },
+    "model": "patients.bed"
+},
+{
+    "pk": 2,
+    "fields": {
+        "state": "free",
+        "updated": "2016-01-06T18:51:20.221Z",
+        "owner": 1,
+        "name": "B2",
+        "added": "2016-01-06T18:51:20.221Z",
+        "price": 20
+    },
+    "model": "patients.bed"
+},
+{
+    "pk": 3,
+    "fields": {
+        "state": "free",
+        "updated": "2016-01-06T18:51:41.162Z",
+        "owner": 1,
+        "patient": 2,
+        "name": "B3",
+        "added": "2016-01-06T18:51:41.162Z",
+        "price": 40
+    },
+    "model": "patients.bed"
+}
+]
