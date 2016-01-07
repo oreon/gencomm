@@ -13,9 +13,10 @@ class BedTests(BaseTest):
     
     
     def admitPatient(self, pid = 1, bedid = 1):
-        response = self.client.put(self.create_url(recordid= bedid , suffix='admitPatient?patient={id}'.format(id=pid)) )
+        response = self.client.put(self.create_url(recordid= bedid , suffix='admitPatient?patient={0}'.format(pid)) )
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patient = Patient.objects.get(id = 1)
+        patient = Patient.objects.get(id = pid)
         return patient    
     
         
