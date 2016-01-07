@@ -30,12 +30,18 @@ empdata =     {
 
 class BaseTest(APITestCase):
     
+    baseurl = 'http://localhost:8000/api/v1/'
+    
+    def setUp(self):
+        self.login()
+        self.url = self.baseurl + self.url
+    
     def login(self,usernm='jag'):
         self.client.logout()
         user = User.objects.get(username=usernm)
         self.client.force_authenticate(user=user)
         
-    baseurl = 'http://localhost:8000/api/v1/'
+    
 
     def create_url(self, recordid=1, suffix=None):
         suff = ''
@@ -53,9 +59,6 @@ class DepartmentTests(BaseTest):
     
     fixtures = ['users.yaml','testdata.yaml']
     
-    def setUp(self):
-        self.login()
-        self.url = self.baseurl + 'departments'
         
     def test_read_department(self):
         response = self.client.get(self.create_url(recordid=3))
@@ -86,15 +89,10 @@ class DepartmentTests(BaseTest):
         
 class EmployeeTests(BaseTest):
     
-    url = 'http://localhost:8000/api/v1/employees'
+    url = 'employees'
     
     fixtures = ['users.yaml','testdata.yaml']
-    
-    def setUp(self):
-        self.login()
-        self.url = self.baseurl + 'employees'
-
-        
+           
     def test_read_employee(self):
         response = self.read_one_record()
         self.assertEqual(response.status_code, status.HTTP_200_OK)

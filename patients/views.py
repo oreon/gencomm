@@ -2,7 +2,7 @@ import sys
 
 from django.shortcuts import render
 from rest_framework import viewsets, status
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from commerce.views import BaseViewSet
@@ -11,16 +11,25 @@ from patients.serializers import BedSerializer, PatientSerializer
 
 
 # Create your views here.
-class BedViewSet( viewsets.ModelViewSet):
+class BedViewSet( BaseViewSet):
     queryset = Bed.objects.all()
     
     def get_serializer_class(self, *args, **kwargs):
         return BedSerializer
     
+    @list_route(methods=['get'])
+    def getBedMap(self,request, *args, **kwargs):
+        beds = Bed.objects.all()
+        bedmaps = list ( map(lambda bed: { 'bedName':bed.name , 'patient': bed.patient.displayName  if bed.patient else '' , 'bedId': bed.id } , beds) )
+        return Response( bedmaps, status=status.HTTP_200_OK)
+    
+   
+        
+    
 class PatientViewSet( BaseViewSet):
     queryset = Patient.objects.all()
     
-    @detail_route(methods=['put','get'])
+    @detail_route(methods=['put'])
     def admit(self,request, *args, **kwargs):
         patient = self.get_object()
         try:

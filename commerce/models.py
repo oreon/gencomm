@@ -41,6 +41,12 @@ class Person(BaseModel):
     lastName = models.CharField(null = False, blank = True,  max_length=30)
     
     #address = models.ForeignKey(Address, related_name='person')
+    @property   
+    def displayName(self):
+        return self.__str__()
+    
+    def __str__(self):
+        return ''.join([self.firstName , ', ', self.lastName]);
      
     class Meta:
         abstract = True
@@ -65,8 +71,6 @@ class Employee(Person):
     
     state = FSMField(default='hired')
     
-    def __str__(self):
-        return ''.join([self.firstName , ', ', self.lastName]);
     
     @transition(field=state, source='hired', target='active')
     def join(self):
@@ -88,9 +92,7 @@ class Employee(Person):
     def reinstate(self):
         pass
     
-    @property
-    def displayName(self):
-        return self.__str__()
+    
     
 class Skill(models.Model):
     name = models.CharField(null = False, blank = True,  max_length=30)

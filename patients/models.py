@@ -9,6 +9,9 @@ from commerce.modelsBase import BaseModel
 class Patient(Person): 
 
     state = FSMField(default='outpatient')
+    
+    def __str__(self):
+        return   ' '.join([super().__str__() , '30' , self.gender]);
      
     @transition(field=state, source='outpatient', target='admitted')
     def admit(self):
