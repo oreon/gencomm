@@ -16,7 +16,7 @@
 {
     "pk": 2,
     "fields": {
-        "state": "outpatient",
+        "state": "admitted",
         "updated": "2016-01-06T18:49:54.700Z",
         "owner": 1,
         "dob": "1991-09-28",
@@ -68,7 +68,7 @@
 {
     "pk": 3,
     "fields": {
-        "state": "free",
+        "state": "occupied",
         "updated": "2016-01-06T18:51:41.162Z",
         "owner": 1,
         "patient": 2,

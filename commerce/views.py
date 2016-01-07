@@ -3,6 +3,7 @@ from django_fsm import get_available_FIELD_transitions, \
     get_available_user_FIELD_transitions
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import detail_route
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from commerce.models import Employee, Department, Skill, EmployeeSkill
@@ -12,6 +13,12 @@ from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     DepartmentLookupSerializer, \
     EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer, \
     DepartmentWritableSerializer, FullEmployeeSerializer, SkillLookupSerializer
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 
 
 class ReadNestedWriteFlatMixin(object):
@@ -149,6 +156,8 @@ class DepartmentWritableViewSet(DepartmentViewSet):
     serializer_class = DepartmentWritableSerializer
     
 class SkillLookupViewSet(viewsets.ModelViewSet):
+    
+    pagination_class = LargeResultsSetPagination
     
     queryset = Skill.objects.all()
     serializer_class = SkillLookupSerializer

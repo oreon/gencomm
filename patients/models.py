@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django_fsm import FSMField, transition
 
@@ -9,6 +10,16 @@ from commerce.modelsBase import BaseModel
 class Patient(Person): 
 
     state = FSMField(default='outpatient')
+    
+    def getBed(self):
+        try:
+            bedobj = Bed.objects.get(patient = self)
+            return bedobj
+        except ObjectDoesNotExist :
+            return None
+      
+    
+    #bed = models.ForeignKey('bed',null = True, blank = True)
     
     def __str__(self):
         return   ' '.join([super().__str__() , '30' , self.gender]);
