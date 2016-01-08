@@ -1,15 +1,17 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django_fsm import FSMField, transition
+from django_fsm import FSMField, transition, ConcurrentTransitionMixin
 
 from commerce.models import Person
 from commerce.modelsBase import BaseModel
 
 
 # Create your models here.
-class Patient(Person): 
+class Patient(ConcurrentTransitionMixin, Person): 
 
     state = FSMField(default='outpatient')
+    
+    schedules = models.ManyToManyField("Schedule",  blank=True, null=True, related_name="schedules")
     
     def getBed(self):
         try:
@@ -70,7 +72,7 @@ class Bed(BaseModel):
         return ''.join(self.name)
     
     
-class Admission(BaseModel):
+class Admission(ConcurrentTransitionMixin, BaseModel):
     
     notes = models.TextField(null = False, blank = True)
     patient = models.ForeignKey(Patient, related_name='admission',null = True, blank = True)
@@ -101,4 +103,20 @@ class BedStay(BaseModel):
     
 
     
+class Schedule(BaseModel):
     
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    
+    def __str__(self):
+        return ''.join(self.name)
+    
+    
+class ScheduleProcedure(BaseModel): 
+    
+    schedule = models.ForeignKey(Admission, related_name='procedures', on_delete=models.CASCADE)
+    
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    
+    frequency = models.IntegerField(null = False, blank = True,  max_length=30)
+    
+
