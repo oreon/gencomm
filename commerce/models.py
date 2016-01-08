@@ -8,6 +8,7 @@ from django_fsm import FSMField, transition
 import commerce
 from commerce.modelsBase import BaseModel
 from commerce.modelsBase import DepartmentBase
+from django.db.models.deletion import CASCADE
 
 
 class Address(models.Model): 
@@ -105,9 +106,13 @@ class Skill(models.Model):
         return self.__str__()
     
 class EmployeeSkill(models.Model):
-    employee = models.ForeignKey(Employee, related_name='employeeSkills')
+    employee = models.ForeignKey(Employee, related_name='employeeSkills', on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill)
     experience   = models.IntegerField(default = 1)
+    
+    class Meta:
+        order_with_respect_to = 'employee'
+        unique_together = ("employee", "skill")
     
  
 

@@ -8,8 +8,9 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from commerce.views import BaseViewSet
-from patients.models import Bed, Patient, BedStay
-from patients.serializers import BedSerializer, PatientSerializer
+from patients.models import Bed, Patient, BedStay, Admission
+from patients.serializers import BedSerializer, PatientSerializer, \
+    AdmissionSerializer
 
 
 # Create your views here.
@@ -36,7 +37,7 @@ class BedViewSet( BaseViewSet):
             
             self.movePatientIntoBed(request, bed, patient)
            
-            return Response( 'admitted patient to {0} '.format(bed.name), status=status.HTTP_200_OK)
+            return Response( self.get_serializer(bed).data, status=status.HTTP_200_OK)
         except Exception as err:
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
 
@@ -57,7 +58,9 @@ class BedViewSet( BaseViewSet):
             self.movePatientIntoBed(request, bed, patient)
             
             oldBed.save()
-            return Response( 'transferred patient to {0} from {1} '.format(bed.name, oldBed.name), status=status.HTTP_200_OK)
+            
+            print('transferred patient to {0} from {1} '.format(bed.name, oldBed.name))
+            return Response( self.get_serializer(bed).data, status=status.HTTP_200_OK)
         except Exception as err:
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
         
@@ -109,3 +112,10 @@ class PatientViewSet( BaseViewSet):
 
     def get_serializer_class(self, *args, **kwargs):
         return PatientSerializer
+    
+    
+class AdmissionViewSet( BaseViewSet):
+    queryset = Admission.objects.all()
+    
+    def get_serializer_class(self, *args, **kwargs):
+        return AdmissionSerializer

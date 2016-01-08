@@ -44,7 +44,7 @@ class BedTests(BaseTest):
         patient = Patient.objects.get(id = 1)
         self.assertEquals(patient.getBed(), None)
         response = self.client.put(self.create_url(recordid = 3, suffix='admitPatient?patient={id}'.format(id=patient.id)) )
-        print('eror msg ' + response.data) #TODO 
+        #print( response.data) #TODO 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
         
@@ -81,6 +81,8 @@ class BedTests(BaseTest):
         self.assertEqual(patient.getBed(), None)
         self.assertEqual(oldbed.patient , None)
         self.assertEqual(oldbed.state, 'free')
+        
+        #admission
 
 
 class PatientTests(BaseTest):

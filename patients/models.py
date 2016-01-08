@@ -13,7 +13,7 @@ class Patient(Person):
     
     def getBed(self):
         try:
-            bedobj = Bed.objects.get(patient = self)
+            bedobj = self.bed.get(patient = self)
             return bedobj
         except ObjectDoesNotExist :
             return None
@@ -78,7 +78,7 @@ class Admission(BaseModel):
     
     def getCurrentBedStay(self):
         lst = list( filter(lambda x : x.endDate == None , self.bedstays.all() ) )
-        assert (len(lst) == 1, "Found multiple CURRENT bedstays")
+        assert len(lst) == 1, "Found multiple CURRENT bedstays"
         return lst[0]
     
     
