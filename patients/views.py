@@ -1,4 +1,5 @@
 import datetime
+import json
 import sys
 
 from django.shortcuts import render
@@ -30,10 +31,14 @@ class BedViewSet( BaseViewSet):
     def admitPatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
-            patientId = request.query_params["patient"]
+            
+            data = json.loads( request.data)
+            patientId = data['patient']
+            note = data['note']
+            
             patient = Patient.objects.get(id = patientId)
             
-            patient.admit(request)
+            patient.admit(request, note)
             
             self.movePatientIntoBed(request, bed, patient)
            
@@ -46,7 +51,11 @@ class BedViewSet( BaseViewSet):
     def transferPatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
-            patientId = request.query_params["patient"]
+            
+            data = json.loads( request.data)
+            patientId = data['patient']
+            note = data['note']
+            
             patient = Patient.objects.get(id = patientId)
             oldBed = patient.getBed()
             
@@ -68,7 +77,11 @@ class BedViewSet( BaseViewSet):
     def dischargePatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
-            patientId = request.query_params["patient"]
+            
+            data = json.loads( request.data)
+            patientId = data['patient']
+            note = data['note']
+            
             patient = Patient.objects.get(id = patientId)
             bed = patient.getBed()
             

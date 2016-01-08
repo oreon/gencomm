@@ -33,8 +33,8 @@ class Patient(Person):
         return   ' '.join([super().__str__() , '30' , self.gender]);
      
     @transition(field=state, source='outpatient', target='admitted')
-    def admit(self, request):
-        admission = Admission.objects.create( owner = request.user , patient = self)
+    def admit(self, request, note):
+        admission = Admission.objects.create( owner = request.user , patient = self, notes = note)
     
     @transition(field=state, source='admitted', target='admitted')
     def transfer(self):

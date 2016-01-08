@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from rest_framework import status
 
@@ -11,9 +13,14 @@ class BedTests(BaseTest):
     url = 'beds'
     fixtures = ['users.yaml','patients.json']
     
+    def createDataForAdmission(self, pid):
+        data = {'patient': pid, 'note' : "Admitting for further investigation "}
+        return json.dumps(data)
+    
     
     def admitPatient(self, pid = 1, bedid = 1):
-        response = self.client.put(self.create_url(recordid= bedid , suffix='admitPatient?patient={0}'.format(pid)) )
+        
+        response = self.client.put(self.create_url(recordid= bedid , suffix='admitPatient'),  self.createDataForAdmission(pid))
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         patient = Patient.objects.get(id = pid)
@@ -34,19 +41,22 @@ class BedTests(BaseTest):
         self.assertEquals(bed['patient'] , patient.displayName)
         self.assertEquals(patient.getBed().id, 1)
         
+
+        
     def test_AlreadyAdmittedPatient(self):
         patient = Patient.objects.get(id = 2)
-        response = self.client.put(self.create_url(suffix='admitPatient?patient={id}'.format(id=patient.id)) )
+        response = self.client.put(self.create_url(suffix='admitPatient' ),  self.createDataForAdmission(patient.id))
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
     def test_AlreadyOccupiedBed(self):
         patient = Patient.objects.get(id = 1)
         self.assertEquals(patient.getBed(), None)
-        response = self.client.put(self.create_url(recordid = 3, suffix='admitPatient?patient={id}'.format(id=patient.id)) )
+        response = self.client.put(self.create_url(recordid = 3, suffix='admitPatient'),  self.createDataForAdmission(patient.id))
         #print( response.data) #TODO 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
+
         
     def test_transferPatient(self):
         
@@ -55,7 +65,7 @@ class BedTests(BaseTest):
         patient = self.admitPatient()
         oldBedid = patient.getBed().id
         
-        response = self.client.put(self.create_url(recordid=newbedId, suffix='transferPatient?patient={id}'.format(id=patient.id)) )
+        response = self.client.put(self.create_url(recordid=newbedId, suffix='transferPatient') , self.createDataForAdmission(patient.id))
         print(response.data)
         oldbed = Bed.objects.get(id = oldBedid)
         newbed = Bed.objects.get(id = newbedId)
@@ -72,8 +82,8 @@ class BedTests(BaseTest):
         patient = self.admitPatient()
         
         bedid = patient.getBed().id
-        
-        response = self.client.put(self.create_url(recordid=newbedId, suffix='dischargePatient?patient={id}'.format(id=patient.id)) )
+           
+        response = self.client.put( self.create_url(recordid=newbedId, suffix='dischargePatient'), self.createDataForAdmission(patient.id)   )
         print(response.data)
         oldbed = Bed.objects.get(id = bedid)
 
