@@ -66,10 +66,10 @@ class BedTests(BaseTest):
         oldBedid = patient.getBed().id
         
         response = self.client.put(self.create_url(recordid=newbedId, suffix='transferPatient') , self.createDataForAdmission(patient.id))
-        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         oldbed = Bed.objects.get(id = oldBedid)
         newbed = Bed.objects.get(id = newbedId)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
         self.assertEqual(patient.getBed().id, newbedId)
         self.assertEqual(oldbed.patient , None)
         self.assertEqual(newbed.patient, patient)

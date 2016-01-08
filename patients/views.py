@@ -27,14 +27,12 @@ class BedViewSet( BaseViewSet):
         bedmaps = list ( map(lambda bed: { 'bedName':bed.name , 'patient': bed.patient.displayName  if bed.patient else '' , 'bedId': bed.id } , beds) )
         return Response( bedmaps, status=status.HTTP_200_OK)
     
-    @detail_route(methods=['put'])
+    @detail_route(methods=['put','post'])
     def admitPatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
             
-            data = json.loads( request.data)
-            patientId = data['patient']
-            note = data['note']
+            patientId, note = self.getData(request)
             
             patient = Patient.objects.get(id = patientId)
             
@@ -47,14 +45,19 @@ class BedViewSet( BaseViewSet):
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
 
         
-    @detail_route(methods=['put'])
+   
+    def getData(self, request):
+        data = json.loads(request.data)
+        patientId = data['patient']
+        note = data['note']
+        return patientId, note
+
+    @detail_route(methods=['put','post'])
     def transferPatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
             
-            data = json.loads( request.data)
-            patientId = data['patient']
-            note = data['note']
+            patientId, note = self.getData(request)
             
             patient = Patient.objects.get(id = patientId)
             oldBed = patient.getBed()
@@ -78,9 +81,7 @@ class BedViewSet( BaseViewSet):
         bed = self.get_object()
         try:
             
-            data = json.loads( request.data)
-            patientId = data['patient']
-            note = data['note']
+            patientId, note = self.getData(request)
             
             patient = Patient.objects.get(id = patientId)
             bed = patient.getBed()
