@@ -32,9 +32,9 @@ class BedViewSet( BaseViewSet):
             patientId = request.query_params["patient"]
             patient = Patient.objects.get(id = patientId)
             
-            patient.admit()
+            patient.admit(request)
             
-            self.movePatientIntoBed(bed, patient)
+            self.movePatientIntoBed(request, bed, patient)
            
             return Response( 'admitted patient to {0} '.format(bed.name), status=status.HTTP_200_OK)
         except Exception as err:
@@ -52,9 +52,9 @@ class BedViewSet( BaseViewSet):
             patient.transfer()
 
             oldBed.vacate()
-            #self.markBedStayEnd(bedStay)
+            self.markBedStayEnd(patient)
             
-            self.movePatientIntoBed(bed, patient)
+            self.movePatientIntoBed(request, bed, patient)
             
             oldBed.save()
             return Response( 'transferred patient to {0} from {1} '.format(bed.name, oldBed.name), status=status.HTTP_200_OK)
@@ -75,7 +75,7 @@ class BedViewSet( BaseViewSet):
             bed.save()
             patient.save()
             
-            #self.markBedStayEnd(bedStay)
+            self.markBedStayEnd(patient)
             
             assert(bed.patient == None)
             return Response( 'discharged patient  from {0} '.format(bed.name), status=status.HTTP_200_OK)
@@ -83,46 +83,29 @@ class BedViewSet( BaseViewSet):
         except Exception as err:
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
         
-    def createBedStay(self, bed, patient):
-        bedStay = BedStay()
-        bedStay.bed = bed
-        bedStay.patient = patient
-        bedStay.startDate = datetime.date.today()
-        #bedStay.save()
+    def createBedStay(self, request, bed, patient):
+        bedStay = BedStay.objects.create(bed = bed, owner = request.user,
+                                         admission = patient.getCurrentAdmission(),
+                                         startDate = datetime.date.today())
         
-    def markBedStayEnd(self, bedStay):
-        bedStay.endDate = now()
+        
+    def markBedStayEnd(self,  patient):
+        bedStay = patient.getCurrentAdmission().getCurrentBedStay()
+        assert(bedStay.endDate == None)
+        bedStay.endDate = datetime.date.today()
         bedStay.save()
         
-    def movePatientIntoBed(self, bed, patient):
+    def movePatientIntoBed(self, request, bed, patient):
         assert(bed.patient == None)
         bed.occupy(patient)
         assert(bed.patient == patient)
         bed.save()
         patient.save()
-        self.createBedStay(bed, patient)             
+        self.createBedStay(request, bed, patient)             
         
 class PatientViewSet( BaseViewSet):
     queryset = Patient.objects.all()
     
-    @detail_route(methods=['put'])
-    def admit(self,request, *args, **kwargs):
-        patient = self.get_object()
-        try:
-            bedid = request.get("bed")
-            print(bedid)
-            patient.admit()
-            patient.bedId = 2
-            bed = Bed.objects.get(id = patient.bedId)
-            assert(bed.patient == None)
-            bed.occupy(patient)
-            assert(bed.patient == patient)
-            patient.save()
-            bed.save()
-            return Response( 'admitted', status=status.HTTP_200_OK)
-        except Exception as err:
-            return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
-        
-    
+
     def get_serializer_class(self, *args, **kwargs):
         return PatientSerializer
