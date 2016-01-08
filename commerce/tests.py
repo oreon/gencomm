@@ -115,7 +115,9 @@ class EmployeeTests(BaseTest):
         response = self.read_one_record(suffix='writable')
         data = response.data
         data['id'] = None
+        data['user'] = None
         response = self.client.post(self.url,data)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)    
         
     def test_edit_employee_permission(self):

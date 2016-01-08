@@ -3,7 +3,7 @@ from django.db import models
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
 
 from commerce.models import Person
-from commerce.modelsBase import BaseModel
+from commerce.modelsBase import BaseModel, MTManager
 
 
 # Create your models here.
@@ -12,6 +12,8 @@ class Patient(ConcurrentTransitionMixin, Person):
     state = FSMField(default='outpatient')
     
     schedules = models.ManyToManyField("Schedule",  blank=True, null=True, related_name="schedules")
+    
+    objects = MTManager()
     
     def getBed(self):
         try:

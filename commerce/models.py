@@ -2,13 +2,14 @@
 from datetime import timezone
 import datetime
 
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.deletion import CASCADE
 from django_fsm import FSMField, transition
 
 import commerce
 from commerce.modelsBase import BaseModel
 from commerce.modelsBase import DepartmentBase
-from django.db.models.deletion import CASCADE
 
 
 class Address(models.Model): 
@@ -71,6 +72,8 @@ class Employee(Person):
     department = models.ForeignKey(Department, related_name='employees')
     
     state = FSMField(default='hired')
+    
+    user = models.OneToOneField(User, related_name = 'employeeUser', on_delete=models.CASCADE, null = True, blank = True)
     
     
     @transition(field=state, source='hired', target='active')
