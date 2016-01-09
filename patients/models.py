@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
 
-from commerce.models import Person
+from django.contrib.contenttypes import generic
+
+from commerce.models import Person, Gender
 from commerce.modelsBase import BaseModel, MTManager
 
 
@@ -13,7 +16,11 @@ class Patient(ConcurrentTransitionMixin, Person):
     
     schedules = models.ManyToManyField("Schedule",  blank=True, null=True, related_name="schedules")
     
+    user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, null = True, blank = True)
+    
     objects = MTManager()
+    
+
     
     def getBed(self):
         try:
@@ -34,30 +41,47 @@ class Patient(ConcurrentTransitionMixin, Person):
     #bed = models.ForeignKey('bed',null = True, blank = True)
     
     def __str__(self):
-        return   ' '.join([super().__str__() , '30' , self.gender]);
+        return   ' '.join([super().__str__() , str(self.age()) , self.gender]);
      
     @transition(field=state, source='outpatient', target='admitted')
     def admit(self, request, note):
         admission = Admission.objects.create( owner = request.user , patient = self, notes = note)
     
     @transition(field=state, source='admitted', target='admitted')
-    def transfer(self):
+    def transfer(self, note):
         pass 
     
     @transition(field=state, source='admitted', target='outpatient')
-    def discharge(self):
+    def discharge(self, note):
         pass 
     
 
-        
 
+class ProfilePhoto(models.Model):
+
+    profile = models.ForeignKey(Patient, related_name='photos')
+    title = models.CharField(max_length=1000, null=True, blank=True)
+    image = models.ImageField(upload_to='images/%Y/%m/%d', null=True, blank=True)
+
+    def __str__(self):
+        return self.title or 'noname'
+
+
+class Ward(BaseModel): 
+    
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    gender =  models.CharField(max_length=1, choices=Gender, null = False, blank = True)
+    
 class Bed(BaseModel): 
     
     state = FSMField(default='free')
+    
+    ward = models.ForeignKey("Ward", related_name='beds')
 
     name = models.CharField(null = False, blank = True,  max_length=30)
     
-    price = models.IntegerField(null = False, blank = True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, null = False, blank = True) 
+    #models.IntegerField(null = False, blank = True)
     
     patient = models.ForeignKey(Patient, related_name='bed',null = True, blank = True)
     

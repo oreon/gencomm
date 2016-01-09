@@ -8,10 +8,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
-from commerce.views import BaseViewSet
-from patients.models import Bed, Patient, BedStay, Admission
+from commerce.views import BaseViewSet, MultiSerializerViewSetMixin
+from patients.models import Bed, Patient, BedStay, Admission, Schedule
 from patients.serializers import BedSerializer, PatientSerializer, \
-    AdmissionSerializer
+    AdmissionSerializer, ScheduleSerializer
 
 
 # Create your views here.
@@ -62,7 +62,7 @@ class BedViewSet( BaseViewSet):
             patient = Patient.objects.get(id = patientId)
             oldBed = patient.getBed()
             
-            patient.transfer()
+            patient.transfer(note)
 
             oldBed.vacate()
             self.markBedStayEnd(patient)
@@ -86,7 +86,7 @@ class BedViewSet( BaseViewSet):
             patient = Patient.objects.get(id = patientId)
             bed = patient.getBed()
             
-            patient.discharge()
+            patient.discharge(note)
             bed.vacate()
             
             bed.save()
@@ -120,7 +120,15 @@ class BedViewSet( BaseViewSet):
         patient.save()
         self.createBedStay(request, bed, patient)             
         
-class PatientViewSet( BaseViewSet):
+class PatientViewSet(MultiSerializerViewSetMixin, BaseViewSet):
+    serializer_class = PatientSerializer
+    
+    serializer_classes = {
+               'writable': PatientSerializer,
+               'complete': PatientSerializer,
+            }
+    
+    
     queryset = Patient.objects.all()
     
 
@@ -133,3 +141,9 @@ class AdmissionViewSet( BaseViewSet):
     
     def get_serializer_class(self, *args, **kwargs):
         return AdmissionSerializer
+    
+class  ScheduleViewSet( BaseViewSet):
+    queryset = Schedule.objects.all()
+    
+    def get_serializer_class(self, *args, **kwargs):
+        return ScheduleSerializer

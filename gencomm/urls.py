@@ -24,7 +24,8 @@ from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     SkillLookupViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
-from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet
+from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet, \
+    ScheduleViewSet
 
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -50,6 +51,8 @@ router.register(r'appusers', UserViewSet)
 router.register(r'patients', PatientViewSet)
 router.register(r'beds', BedViewSet)
 router.register(r'admissions', AdmissionViewSet)
+router.register(r'schedule', ScheduleViewSet)
+
 
 
 

@@ -42,6 +42,9 @@ class Person(BaseModel):
     firstName = models.CharField(null = False, blank = True,  max_length=30)
     lastName = models.CharField(null = False, blank = True,  max_length=30)
     
+    def age(self):
+        return int((datetime.date.today() - self.dob).days / 365.25  )
+    
     #address = models.ForeignKey(Address, related_name='person')
     @property   
     def displayName(self):

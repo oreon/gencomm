@@ -48,6 +48,7 @@
         "updated": "2016-01-06T18:51:00.124Z",
         "owner": 1,
         "name": "B1",
+        "ward": 1,
         "added": "2016-01-06T18:51:00.124Z",
         "price": 15
     },
@@ -60,6 +61,7 @@
         "updated": "2016-01-06T18:51:20.221Z",
         "owner": 1,
         "name": "B2",
+        "ward": 1,
         "added": "2016-01-06T18:51:20.221Z",
         "price": 20
     },
@@ -73,9 +75,49 @@
         "owner": 1,
         "patient": 2,
         "name": "B3",
+        "ward": 1,
         "added": "2016-01-06T18:51:41.162Z",
         "price": 40
     },
     "model": "patients.bed"
 }
+,
+
+{
+    "pk": 4,
+    "fields": {
+        "state": "occupied",
+        "updated": "2016-01-06T18:51:41.162Z",
+        "owner": 1,
+        "name": "B11",
+        "ward": 2,
+        "added": "2016-01-06T18:51:41.162Z",
+        "price": 40
+    },
+    "model": "patients.bed"
+},
+{
+    "fields": {
+        "updated": "2016-01-09T20:43:05.468Z",
+        "gender": "FEMALE",
+        "added": "2016-01-09T20:43:05.467Z",
+        "name": "Female General",
+        "owner": 1
+    },
+    "pk": 1,
+    "model": "patients.ward"
+},
+
+{
+    "fields": {
+        "updated": "2016-01-09T20:43:05.468Z",
+        "gender": "MALE",
+        "added": "2016-01-09T20:43:05.467Z",
+        "name": "Male General",
+        "owner": 1
+    },
+    "pk": 2,
+    "model": "patients.ward"
+}
+
 ]

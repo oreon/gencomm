@@ -100,10 +100,20 @@ class PatientTests(BaseTest):
     url = 'patients'
     fixtures = ['users.yaml','patients.json']
         
-    def test_createPatient(self):
+    def test_readPatient(self):
         response = self.client.get(self.create_url())
         print(response.data)
         self.assertEqual(response.data['firstName']  ,'Jag')
+        
+    def test_createPatient(self):
+        response = self.read_one_record(suffix='writable')
+        data = response.data
+        data['id'] = None
+        data['user'] = 2
+        response = self.client.post(self.url,data)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
         
     def t_admitPatient(self):
         response = self.client.put(self.create_url(suffix='admit?bed=2') )
