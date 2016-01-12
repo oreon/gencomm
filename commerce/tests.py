@@ -1,10 +1,12 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from commerce.models import Department, Employee
+from patients.models import Schedule
 
 
 class QuestionMethodTests(TestCase):
@@ -39,6 +41,21 @@ class BaseTest(APITestCase):
     def login(self,usernm='jag'):
         self.client.logout()
         user = User.objects.get(username=usernm)
+        '''
+        groups = user.groups.all()
+        print ('found grps {0}'.format( len(groups) ) )
+        
+        for g in groups:
+            for p in g.permissions.all():
+                print (p.name)
+        
+        perm = Permission.objects.get(id=85)
+        ct = ContentType.objects.get_for_model(Schedule)
+        ct.app_label='main'
+        perm.content_type = ct
+        print (perm.name)
+        print(user.has_perms([perm]) )
+        '''
         self.client.force_authenticate(user=user)
         
     

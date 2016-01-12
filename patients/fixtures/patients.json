@@ -107,7 +107,6 @@
     "pk": 1,
     "model": "patients.ward"
 },
-
 {
     "fields": {
         "updated": "2016-01-09T20:43:05.468Z",
@@ -118,6 +117,36 @@
     },
     "pk": 2,
     "model": "patients.ward"
+},
+{
+    "model": "patients.schedule",
+    "fields": {
+        "name": "Diabetes",
+        "added": "2016-01-09T09:07:28.145Z",
+        "updated": "2016-01-09T09:07:28.145Z",
+        "owner": 2
+    },
+    "pk": 1
+},
+{
+    "model": "patients.schedule",
+    "fields": {
+        "name": "Hypertension",
+        "added": "2016-01-09T09:07:48.040Z",
+        "updated": "2016-01-09T09:07:48.040Z",
+        "owner": 2
+    },
+    "pk": 2
+},
+{
+    "model": "patients.schedule",
+    "fields": {
+        "name": "CAD",
+        "added": "2016-01-09T09:08:06.832Z",
+        "updated": "2016-01-09T09:08:06.832Z",
+        "owner": 2
+    },
+    "pk": 3
 }
 
 ]

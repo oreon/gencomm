@@ -4,7 +4,7 @@ import sys
 
 from django.shortcuts import render
 from django.template.defaulttags import now
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
@@ -66,12 +66,11 @@ class BedViewSet( BaseViewSet):
 
             oldBed.vacate()
             self.markBedStayEnd(patient)
+            oldBed.save()
             
             self.movePatientIntoBed(request, bed, patient)
             
-            oldBed.save()
-            
-            print('transferred patient to {0} from {1} '.format(bed.name, oldBed.name))
+            print('transferred patient from {0} to {1} '.format(oldBed.name, bed.name))
             return Response( self.get_serializer(bed).data, status=status.HTTP_200_OK)
         except Exception as err:
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
@@ -84,17 +83,21 @@ class BedViewSet( BaseViewSet):
             patientId, note = self.getData(request)
             
             patient = Patient.objects.get(id = patientId)
+            assert(patient.getBed() != None)
             bed = patient.getBed()
             
+            #TODO move to patient model discharge method
+            self.markBedStayEnd(patient)
             patient.discharge(note)
             bed.vacate()
             
             bed.save()
             patient.save()
             
-            self.markBedStayEnd(patient)
+            
             
             assert(bed.patient == None)
+            assert(patient.getBed() == None)
             return Response( 'discharged patient  from {0} '.format(bed.name), status=status.HTTP_200_OK)
         
         except Exception as err:
@@ -123,6 +126,7 @@ class BedViewSet( BaseViewSet):
 class PatientViewSet(MultiSerializerViewSetMixin, BaseViewSet):
     serializer_class = PatientSerializer
     
+    
     serializer_classes = {
                'writable': PatientSerializer,
                'complete': PatientSerializer,
@@ -144,6 +148,13 @@ class AdmissionViewSet( BaseViewSet):
     
 class  ScheduleViewSet( BaseViewSet):
     queryset = Schedule.objects.all()
+    permission_classes = (permissions.DjangoModelPermissions, permissions.IsAuthenticatedOrReadOnly)
+    
+    '''
+    def __init__(self):
+        pass
+        #self.permission_classes = (super().permission_classes, permissions.DjangoModelPermissions)
+    '''
     
     def get_serializer_class(self, *args, **kwargs):
         return ScheduleSerializer

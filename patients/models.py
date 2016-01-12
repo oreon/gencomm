@@ -1,11 +1,12 @@
+import datetime
+
+from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
 
-from django.contrib.contenttypes import generic
-
-from commerce.models import Person, Gender
+from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
 
 
@@ -14,18 +15,16 @@ class Patient(ConcurrentTransitionMixin, Person):
 
     state = FSMField(default='outpatient')
     
-    schedules = models.ManyToManyField("Schedule",  blank=True, null=True, related_name="schedules")
+    schedules = models.ManyToManyField("Schedule",  blank=True,  related_name="schedules")
     
     user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, null = True, blank = True)
     
     objects = MTManager()
     
 
-    
     def getBed(self):
         try:
-            bedobj = self.bed.get(patient = self)
-            return bedobj
+            return self.bed
         except ObjectDoesNotExist :
             return None
         
@@ -53,6 +52,11 @@ class Patient(ConcurrentTransitionMixin, Person):
     
     @transition(field=state, source='admitted', target='outpatient')
     def discharge(self, note):
+        #self.bed = None
+        admission = self.getCurrentAdmission()
+        admission.dischargeDate = datetime.date.today()
+        #admission.dischargeNote = note
+        admission.save()
         pass 
     
 
@@ -70,7 +74,7 @@ class ProfilePhoto(models.Model):
 class Ward(BaseModel): 
     
     name = models.CharField(null = False, blank = True,  max_length=30)
-    gender =  models.CharField(max_length=1, choices=Gender, null = False, blank = True)
+    gender =  models.CharField(max_length = 10, choices=Gender, null = False, blank = True)
     
 class Bed(BaseModel): 
     
@@ -83,7 +87,7 @@ class Bed(BaseModel):
     price = models.DecimalField(max_digits=6, decimal_places=2, null = False, blank = True) 
     #models.IntegerField(null = False, blank = True)
     
-    patient = models.ForeignKey(Patient, related_name='bed',null = True, blank = True)
+    patient = models.OneToOneField(Patient, related_name='bed',null = True, blank = True,)
     
     @transition(field=state, source='free', target='occupied')
     def occupy(self, patient):
@@ -143,6 +147,25 @@ class ScheduleProcedure(BaseModel):
     
     name = models.CharField(null = False, blank = True,  max_length=30)
     
-    frequency = models.IntegerField(null = False, blank = True,  max_length=30)
+    frequency = models.IntegerField(null = False, blank = True,  )
     
 
+class Appointment(BaseModel):
+
+    patient = models.ForeignKey(Patient, related_name='appointments',null = False,  )
+    
+    doctor = models.ForeignKey(Employee, related_name='appointments',null = False, limit_choices_to={'user.groups': True}, )
+    
+    slot = models.DateTimeField()
+    
+    class Meta:
+        unique_together = (("patient", "slot"), ("doctor", "slot"))
+        
+        
+        
+auditlog.register(Schedule)
+auditlog.register(Ward)
+
+auditlog.register(Patient)
+auditlog.register(Bed)
+auditlog.register(Appointment)

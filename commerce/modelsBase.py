@@ -1,6 +1,7 @@
 
 import inspect
 
+from auditlog.models import AuditlogHistoryField
 from django.db import models
 
 
@@ -25,9 +26,10 @@ class MTManager(models.Manager):
 
 class BaseModel(models.Model):
     
-    owner = models.ForeignKey('auth.User', null = False, blank = True)
+    owner = models.ForeignKey('auth.User', null = False, blank = True, editable=False)
     added = models.DateTimeField(auto_now_add=True, null = False, blank = True)
     updated = models.DateTimeField(auto_now=True, null = False, blank = True)
+    history = AuditlogHistoryField()
     
     objects = MTManager()
     

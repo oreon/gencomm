@@ -11,7 +11,7 @@ from patients.models import Patient, Bed
 class BedTests(BaseTest):
     
     url = 'beds'
-    fixtures = ['users.yaml','patients.json']
+    fixtures = ['users.json','patients.json']
     
     def createDataForAdmission(self, pid):
         data = {'patient': pid, 'note' : "Admitting for further investigation "}
@@ -70,6 +70,8 @@ class BedTests(BaseTest):
         oldbed = Bed.objects.get(id = oldBedid)
         newbed = Bed.objects.get(id = newbedId)
         
+        patient = Patient.objects.get(id = 1)
+        
         self.assertEqual(patient.getBed().id, newbedId)
         self.assertEqual(oldbed.patient , None)
         self.assertEqual(newbed.patient, patient)
@@ -88,8 +90,15 @@ class BedTests(BaseTest):
         oldbed = Bed.objects.get(id = bedid)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(patient.getBed(), None)
+        
+        print(patient.getBed())
+        
+        patient = Patient.objects.get(id = 1)
+        
+        print(patient.getBed())
         self.assertEqual(oldbed.patient , None)
+        self.assertEqual(patient.getBed(), None)
+        
         self.assertEqual(oldbed.state, 'free')
         
         #admission
@@ -98,7 +107,7 @@ class BedTests(BaseTest):
 class PatientTests(BaseTest):
     
     url = 'patients'
-    fixtures = ['users.yaml','patients.json']
+    fixtures = ['users.json','patients.json']
         
     def test_readPatient(self):
         response = self.client.get(self.create_url())
@@ -120,3 +129,30 @@ class PatientTests(BaseTest):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         print(response.data)
         #self.assertEqual(response.data['firstName']  ,'Jag')
+        
+        
+class ScheduleTests(BaseTest):
+    
+    url = 'schedules'
+    
+    fixtures = ['users.json','patients.json']
+        
+    def t_createScheduleByNurse(self):
+        self.login('alicia-rn')
+        response = self.read_one_record(suffix='writable')
+        data = response.data
+        data['id'] = None
+        response = self.client.post(self.url,data)
+        print(response.data)
+        ''' access should be denied'''
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+    def test_createSchedule(self):
+        #self.login('alicia-rn')
+        response = self.read_one_record(suffix='writable')
+        data = response.data
+        data['id'] = None
+        response = self.client.post(self.url,data)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
