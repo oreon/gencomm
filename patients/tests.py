@@ -40,6 +40,7 @@ class BedTests(BaseTest):
         bed = list(filter( lambda x : x['bedId'] == 1, response.data))[0]
         self.assertEquals(bed['patient'] , patient.displayName)
         self.assertEquals(patient.getBed().id, 1)
+        self.assertEquals(patient.state, "admitted")
         
 
         
@@ -66,11 +67,13 @@ class BedTests(BaseTest):
         oldBedid = patient.getBed().id
         
         response = self.client.put(self.create_url(recordid=newbedId, suffix='transferPatient') , self.createDataForAdmission(patient.id))
+        #print("FROM TRANSFER " + response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         oldbed = Bed.objects.get(id = oldBedid)
         newbed = Bed.objects.get(id = newbedId)
         
         patient = Patient.objects.get(id = 1)
+        
         
         self.assertEqual(patient.getBed().id, newbedId)
         self.assertEqual(oldbed.patient , None)

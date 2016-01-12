@@ -27,30 +27,32 @@ class BedViewSet( BaseViewSet):
         bedmaps = list ( map(lambda bed: { 'bedName':bed.name , 'patient': bed.patient.displayName  if bed.patient else '' , 'bedId': bed.id } , beds) )
         return Response( bedmaps, status=status.HTTP_200_OK)
     
+    def getData(self, request):
+        data = json.loads(request.data)
+        patientId = data['patient']
+        note = data['note']
+        return patientId, note
+    
     @detail_route(methods=['put','post'])
     def admitPatient(self,request, *args, **kwargs):
         bed = self.get_object()
         try:
             
             patientId, note = self.getData(request)
-            
             patient = Patient.objects.get(id = patientId)
+    
+            patient.admit(bed, request, note)
             
-            patient.admit(request, note)
-            
-            self.movePatientIntoBed(request, bed, patient)
-           
+            bed.save()
+            patient.save()
+                   
             return Response( self.get_serializer(bed).data, status=status.HTTP_200_OK)
         except Exception as err:
+            
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
 
         
    
-    def getData(self, request):
-        data = json.loads(request.data)
-        patientId = data['patient']
-        note = data['note']
-        return patientId, note
 
     @detail_route(methods=['put','post'])
     def transferPatient(self,request, *args, **kwargs):
@@ -62,13 +64,15 @@ class BedViewSet( BaseViewSet):
             patient = Patient.objects.get(id = patientId)
             oldBed = patient.getBed()
             
-            patient.transfer(note)
-
-            oldBed.vacate()
-            self.markBedStayEnd(patient)
+            patient.transfer( bed, note)
+            oldBed.vacate()  
+                      
             oldBed.save()
+            bed.save()
+            patient.save()
             
-            self.movePatientIntoBed(request, bed, patient)
+            
+            #self.movePatientIntoBed(request, bed, patient)
             
             print('transferred patient from {0} to {1} '.format(oldBed.name, bed.name))
             return Response( self.get_serializer(bed).data, status=status.HTTP_200_OK)
@@ -86,15 +90,11 @@ class BedViewSet( BaseViewSet):
             assert(patient.getBed() != None)
             bed = patient.getBed()
             
-            #TODO move to patient model discharge method
-            self.markBedStayEnd(patient)
             patient.discharge(note)
             bed.vacate()
             
             bed.save()
             patient.save()
-            
-            
             
             assert(bed.patient == None)
             assert(patient.getBed() == None)
@@ -103,25 +103,7 @@ class BedViewSet( BaseViewSet):
         except Exception as err:
             return Response(str(err),status=status.HTTP_400_BAD_REQUEST)
         
-    def createBedStay(self, request, bed, patient):
-        bedStay = BedStay.objects.create(bed = bed, owner = request.user,
-                                         admission = patient.getCurrentAdmission(),
-                                         startDate = datetime.date.today())
-        
-        
-    def markBedStayEnd(self,  patient):
-        bedStay = patient.getCurrentAdmission().getCurrentBedStay()
-        assert(bedStay.endDate == None)
-        bedStay.endDate = datetime.date.today()
-        bedStay.save()
-        
-    def movePatientIntoBed(self, request, bed, patient):
-        assert(bed.patient == None)
-        bed.occupy(patient)
-        assert(bed.patient == patient)
-        bed.save()
-        patient.save()
-        self.createBedStay(request, bed, patient)             
+             
         
 class PatientViewSet(MultiSerializerViewSetMixin, BaseViewSet):
     serializer_class = PatientSerializer

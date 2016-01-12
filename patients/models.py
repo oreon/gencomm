@@ -43,12 +43,19 @@ class Patient(ConcurrentTransitionMixin, Person):
         return   ' '.join([super().__str__() , str(self.age()) , self.gender]);
      
     @transition(field=state, source='outpatient', target='admitted')
-    def admit(self, request, note):
+    def admit(self, bed, request, note):
         admission = Admission.objects.create( owner = request.user , patient = self, notes = note)
+        admission.movePatientIntoBed(bed)
+        
     
     @transition(field=state, source='admitted', target='admitted')
-    def transfer(self, note):
-        pass 
+    def transfer(self, newbed, note):
+        bed = self.getBed()
+        self.getCurrentAdmission().markBedStayEnd()
+        self.getCurrentAdmission().movePatientIntoBed(newbed)
+        
+        
+ 
     
     @transition(field=state, source='admitted', target='outpatient')
     def discharge(self, note):
@@ -112,6 +119,27 @@ class Admission(ConcurrentTransitionMixin, BaseModel):
         lst = list( filter(lambda x : x.endDate == None , self.bedstays.all() ) )
         assert len(lst) == 1, "Found multiple CURRENT bedstays"
         return lst[0]
+    
+    def createBedStay(self,  bed):
+        bedStay = BedStay.objects.create(bed = bed, owner = self.owner,
+                                         admission = self,
+                                         startDate = datetime.date.today())
+        
+        
+    def markBedStayEnd(self):
+        bedStay = self.getCurrentBedStay()
+        assert(bedStay.endDate == None)
+        bedStay.endDate = datetime.date.today()
+        bedStay.save()
+        
+    def movePatientIntoBed(self, bed ):
+        #assert(self..patient == None)
+        bed.occupy(self.patient)
+        assert(bed.patient == self.patient)
+        self.createBedStay( bed)
+        
+        
+        
     
     
 
