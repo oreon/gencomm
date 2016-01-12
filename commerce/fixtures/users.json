@@ -1,0 +1,123 @@
+[
+{
+    "pk": 1,
+    "fields": {
+        "permissions": [],
+        "name": "patients"
+    },
+    "model": "auth.group"
+},
+{
+    "pk": 2,
+    "fields": {
+        "permissions": [
+            
+        ],
+        "name": "physicians"
+    },
+    "model": "auth.group"
+},
+{
+    "pk": 3,
+    "fields": {
+        "permissions": [],
+        "name": "nurses"
+    },
+    "model": "auth.group"
+},
+{
+    "pk": 4,
+    "fields": {
+        "permissions": [],
+        "name": "clerks"
+    },
+    "model": "auth.group"
+},
+{
+    "pk": 5,
+    "fields": {
+        "permissions": [
+           
+        ],
+        "name": "org-admins"
+    },
+    "model": "auth.group"
+},
+{
+    "pk": 1,
+    "fields": {
+        "last_login": "2016-01-12T18:00:30.477Z",
+        "groups": [],
+        "last_name": "",
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$20000$fL9QeVJQLS3b$p3eq9Pn36Q0iFvCIUBaF2fK9dlU/4IEyn1tYFUgUO2w=",
+        "first_name": "",
+        "is_superuser": true,
+        "is_staff": true,
+        "is_active": true,
+        "username": "admin",
+        "email": "sj@ss.com",
+        "date_joined": "2016-01-04T11:45:22.070Z"
+    },
+    "model": "auth.user"
+},
+{
+    "pk": 2,
+    "fields": {
+        "last_login": "2016-01-11T16:21:06.393Z",
+        "groups": [],
+        "last_name": "",
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$20000$XiLKK5QsNhZp$YEuNKXtlZ+BmuIjnGniz1Enw6mzSMbDfF8l8MYqNgj8=",
+        "first_name": "",
+        "is_superuser": true,
+        "is_staff": true,
+        "is_active": true,
+        "username": "oliver",
+        "email": "ol@ss.com",
+        "date_joined": "2016-01-08T19:46:37.125Z"
+    },
+    "model": "auth.user"
+},
+{
+    "pk": 3,
+    "fields": {
+        "last_login": "2016-01-11T20:32:12.869Z",
+        "groups": [
+            3
+        ],
+        "last_name": "",
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$20000$d4rQ0kNbr4Ue$Uqyf9Fx0S8bKF1kSvBVUqtKyiiXUOkAi4tCHaQhY1zM=",
+        "first_name": "",
+        "is_superuser": true,
+        "is_staff": true,
+        "is_active": true,
+        "username": "mike",
+        "email": "",
+        "date_joined": "2016-01-11T16:19:33Z"
+    },
+    "model": "auth.user"
+},
+{
+    "pk": 4,
+    "fields": {
+        "last_login": "2016-01-11T20:33:11Z",
+        "groups": [
+            2,
+            5
+        ],
+        "last_name": "",
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$20000$mLZxZu3sSNMu$FLWm7tW01b7vMcLfVIgV8t9g501jZUD+6BArQ7o+P8Q=",
+        "first_name": "jag",
+        "is_superuser": true,
+        "is_staff": true,
+        "is_active": true,
+        "username": "jag",
+        "email": "",
+        "date_joined": "2016-01-11T16:21:26Z"
+    },
+    "model": "auth.user"
+}
+]
