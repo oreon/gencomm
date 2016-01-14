@@ -36,7 +36,7 @@ Gender = (
 
 class Person(BaseModel): 
 
-    gender = models.CharField(max_length=1, choices=Gender, null = False, blank = True)
+    gender = models.CharField(max_length=6, choices=Gender, null = False, blank = True)
     dob = models.DateField(null = False, blank = True, )
     
     firstName = models.CharField(null = False, blank = True,  max_length=30)

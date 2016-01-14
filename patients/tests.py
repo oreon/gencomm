@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework import status
 
 from commerce.tests import BaseTest
-from patients.models import Patient, Bed
+from patients.models import Patient, Bed, calcDates
 
 
 # Create your tests here.
@@ -132,6 +132,12 @@ class PatientTests(BaseTest):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         print(response.data)
         #self.assertEqual(response.data['firstName']  ,'Jag')
+        
+    def  tesCalcDates(self):
+        
+       ls = calcDates(60)
+       print (ls)
+    
         
         
 class ScheduleTests(BaseTest):

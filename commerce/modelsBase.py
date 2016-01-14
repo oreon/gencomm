@@ -36,6 +36,15 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        if 'form' in kwargs:
+            form=kwargs['form']
+        else: 
+            form=None
+
+        if self.pk is None and get_request() is not None:
+            self.owner=get_request().user
+        super().save(*args, **kwargs)
 
 class PersonBase(models.Model): 
 

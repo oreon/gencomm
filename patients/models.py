@@ -3,11 +3,14 @@ import datetime
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import m2m_changed
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
 
 from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
+import pandas as pd
+from patients.helpers import calcDates
 
 
 # Create your models here.
@@ -171,11 +174,28 @@ class Schedule(BaseModel):
     
 class ScheduleProcedure(BaseModel): 
     
-    schedule = models.ForeignKey(Admission, related_name='procedures', on_delete=models.CASCADE)
+    schedule = models.ForeignKey(Schedule, related_name='procedures', on_delete=models.CASCADE)
     
     name = models.CharField(null = False, blank = True,  max_length=30)
     
     frequency = models.IntegerField(null = False, blank = True,  )
+    
+    def __str__(self):
+        return ' '.join(self.name)
+    
+    class Meta:
+        unique_together = ("schedule", "name")
+    
+class PatientScheduleProcedure(BaseModel): 
+    
+    scheduleProcedure = models.ForeignKey(ScheduleProcedure, related_name='pocedures', on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, related_name='patientScheduledProcedures', on_delete=models.CASCADE)
+    date = models.DateField(null = False, blank = False, )
+    notes = models.TextField(null = False, blank = True )
+    performDate = models.DateField(null = True, blank = True, )
+    
+    class Meta:
+        unique_together = ("scheduleProcedure", "date", "patient")
     
 
 class Appointment(BaseModel):
@@ -189,7 +209,39 @@ class Appointment(BaseModel):
     class Meta:
         unique_together = (("patient", "slot"), ("doctor", "slot"))
         
+
+
         
+ 
+@transaction.atomic       
+def ptSchedule_changed(sender, instance,  **kwargs):
+    
+    patient = instance
+    pk_set = kwargs.pop('pk_set', None)
+    action = kwargs.pop('action', None)
+    
+    if action == 'pre_add':
+        patient.patientScheduledProcedures.filter(performDate__isnull = True).delete()
+    
+    elif action == 'post_add':
+
+        for schedule in patient.schedules.all():
+            for procedure in schedule.procedures.all():
+                dates = calcDates(procedure.frequency )
+                for date in dates:
+                    try:
+                        PatientScheduleProcedure.objects.create(patient = patient, scheduleProcedure = procedure, date = date)
+                    except Exception as err:
+                        print (err)
+        #print (schedule.name)
+    # Do something
+    
+        
+
+m2m_changed.connect(ptSchedule_changed, sender=Patient.schedules.through)
+
+
+
         
 auditlog.register(Schedule)
 auditlog.register(Ward)
