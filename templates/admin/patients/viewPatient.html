@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Patient - {{patient.displayName}}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<h1>   {{patient.displayName}} </h1>
+
+{% for sp in patient.scheduledProcedures.all %}
+<li>{{ sp.scheduleProcedure.name }} {{sp.date}}  </l1>
+{% endfor %}
+
+{% endblock %}
