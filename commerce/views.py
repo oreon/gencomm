@@ -36,7 +36,7 @@ class ReadNestedWriteFlatMixin(object):
 
 class BaseViewSet( viewsets.ModelViewSet):
     
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -93,8 +93,7 @@ class MultiSerializerViewSetMixin(object):
 class EmployeeViewSet(MultiSerializerViewSetMixin, BaseViewSet):
     queryset = Employee.objects.all()  #.select_related('department', 'owner')
     
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
     
     serializer_class = EmployeeSerializer
     

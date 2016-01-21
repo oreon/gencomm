@@ -11,18 +11,26 @@ from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
 import pandas as pd
 from patients.helpers import calcDates
+from pip.cmdoptions import editable
+
 
 
 # Create your models here.
 class Patient(ConcurrentTransitionMixin, Person): 
 
-    state = FSMField(default='outpatient')
+    state = FSMField(default='outpatient', protected=True, editable=False)
     
     schedules = models.ManyToManyField("Schedule",  blank=True,  related_name="schedules")
     
     user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, null = True, blank = True)
     
     objects = MTManager()
+    
+    class Admin:
+        list_display = ('displayName', 'firstName', 'lastName', 'state')
+        list_filter = ('dob', 'gender')
+        ordering = ('-id',)
+        search_fields = ('firstName','lastName', 'dob')
     
 
     def getBed(self):
@@ -56,9 +64,7 @@ class Patient(ConcurrentTransitionMixin, Person):
         bed = self.getBed()
         self.getCurrentAdmission().markBedStayEnd()
         self.getCurrentAdmission().movePatientIntoBed(newbed)
-        
-        
- 
+         
     
     @transition(field=state, source='admitted', target='outpatient')
     def discharge(self, note):
@@ -67,8 +73,9 @@ class Patient(ConcurrentTransitionMixin, Person):
         admission.dischargeDate = datetime.date.today()
         #admission.dischargeNote = note
         admission.save()
-        pass 
+        pass
     
+   
 
 
 class ProfilePhoto(models.Model):
@@ -189,7 +196,7 @@ class ScheduleProcedure(BaseModel):
 class PatientScheduleProcedure(BaseModel): 
     
     scheduleProcedure = models.ForeignKey(ScheduleProcedure, related_name='pocedures', on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, related_name='patientScheduledProcedures', on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, related_name='scheduledProcedures', on_delete=models.CASCADE)
     date = models.DateField(null = False, blank = False, )
     notes = models.TextField(null = False, blank = True )
     performDate = models.DateField(null = True, blank = True, )
@@ -209,19 +216,18 @@ class Appointment(BaseModel):
     class Meta:
         unique_together = (("patient", "slot"), ("doctor", "slot"))
         
-
-
         
- 
-@transaction.atomic       
+        
+@transaction.atomic
+    #@staticmethod       
 def ptSchedule_changed(sender, instance,  **kwargs):
-    
+        
     patient = instance
     pk_set = kwargs.pop('pk_set', None)
     action = kwargs.pop('action', None)
     
     if action == 'pre_add':
-        patient.patientScheduledProcedures.filter(performDate__isnull = True).delete()
+        patient.scheduledProcedures.filter(performDate__isnull = True).delete()
     
     elif action == 'post_add':
 
@@ -232,9 +238,7 @@ def ptSchedule_changed(sender, instance,  **kwargs):
                     try:
                         PatientScheduleProcedure.objects.create(patient = patient, scheduleProcedure = procedure, date = date)
                     except Exception as err:
-                        print (err)
-        #print (schedule.name)
-    # Do something
+                        print (err) 
     
         
 

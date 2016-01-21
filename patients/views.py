@@ -2,18 +2,25 @@ import datetime
 import json
 import sys
 
-from django.shortcuts import render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, render_to_response
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.template.defaulttags import now
+from django_tables2.config import RequestConfig
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from commerce.views import BaseViewSet, MultiSerializerViewSetMixin
-from patients.models import Bed, Patient, BedStay, Admission, Schedule
+import django_tables2 as tables
+from patients.models import Bed, Patient, BedStay, Admission, Schedule, \
+    PatientScheduleProcedure
 from patients.serializers import BedSerializer, PatientSerializer, \
     AdmissionSerializer, ScheduleSerializer
 
 
+    
 # Create your views here.
 class BedViewSet( BaseViewSet):
     queryset = Bed.objects.all()
@@ -140,3 +147,24 @@ class  ScheduleViewSet( BaseViewSet):
     
     def get_serializer_class(self, *args, **kwargs):
         return ScheduleSerializer
+    
+
+class PatientScheduleProcedureTable(tables.Table):
+    class Meta:
+        model = PatientScheduleProcedure
+        # add class="paleblue" to <table> tag
+        attrs = {"class": "table"}
+    
+    
+@staff_member_required
+def patient_view(request, row_id): # Shows one row (all values in the object) in detail   
+    
+   
+    #. . . create object of MyModel . . .
+    pt = Patient.objects.get(id = row_id)   
+    
+    sptable = PatientScheduleProcedureTable(pt.scheduledProcedures.all())
+    RequestConfig(request).configure(sptable)   
+    return render(request , 'admin/patients/patient/viewPatient.html', {'patient': pt, 'sptable':sptable})
+   
+    

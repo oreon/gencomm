@@ -133,10 +133,10 @@ class PatientTests(BaseTest):
         print(response.data)
         #self.assertEqual(response.data['firstName']  ,'Jag')
         
-    def  tesCalcDates(self):
+    def  tes_CalcDates(self):
         
-       ls = calcDates(60)
-       print (ls)
+        ls = calcDates(60)
+        print (ls)
     
         
         

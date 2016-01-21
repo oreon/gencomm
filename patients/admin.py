@@ -13,8 +13,16 @@ class CustomModelAdminMixin(object):
 class WardAdmin(CustomModelAdminMixin, admin.ModelAdmin):
     pass
 
-class PatientAdmin(CustomModelAdminMixin, admin.ModelAdmin):
-    pass
+class PatientAdmin( admin.ModelAdmin):
+    list_display = ('id','displayName', 'firstName', 'lastName', 'state','show_view_url')
+    list_filter = ('dob', 'gender')
+    ordering = ('-id',)
+    search_fields = ('firstName','lastName', 'dob')
+    
+    def show_view_url(self, obj):
+        return '<a href="viewPatient/%d/">View</a>' % (obj.id)
+    show_view_url.allow_tags = True
+    
 
 class BedAdmin(CustomModelAdminMixin, admin.ModelAdmin):
     pass

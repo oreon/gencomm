@@ -24,8 +24,9 @@ from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     SkillLookupViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
+import gencomm.views
 from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet, \
-    ScheduleViewSet
+    ScheduleViewSet, patient_view
 
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -59,18 +60,23 @@ router.register(r'schedules', ScheduleViewSet)
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
+    url(r'^$', gencomm.views.home, name='home'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^grappelli/', include('grappelli.urls')), 
+    #url(r'^grappelli/', include('grappelli.urls')),
+   # url(r'^admin_tools/', include('admin_tools.urls')),
+    
+    url(r'^admin/patients/patient/viewPatient/(\d+)/$', patient_view), 
     url(r'^admin/', include(admin.site.urls)),
     
     
     url(r'^signup/$', TemplateView.as_view(template_name="signup.html"),
         name='signup'),
     url(r'^email-verification/$',
-        TemplateView.as_view(template_name="email_verification.html"),
+        TemplateView.as_view(template_name="email_verification.html"),  
         name='email-verification'),
     url(r'^login/$', TemplateView.as_view(template_name="login.html"),
         name='login'),

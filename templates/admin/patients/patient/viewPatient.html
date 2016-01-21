@@ -1,4 +1,5 @@
 {% extends "admin/base_site.html" %}
+{% load render_table from django_tables2 %}
 
 {% block title %}Patient - {{patient.displayName}}{% endblock %}
 
@@ -6,6 +7,8 @@
 <div id="content-main">
 
 <h1>   {{patient.displayName}} </h1>
+
+{% render_table sptable %}
 
 {% for sp in patient.scheduledProcedures.all %}
 <li>{{ sp.scheduleProcedure.name }} {{sp.date}}  </l1>
