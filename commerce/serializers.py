@@ -5,6 +5,9 @@ from rest_framework import serializers
 from commerce.models import Employee, Department, Skill, EmployeeSkill
 
 
+
+
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that

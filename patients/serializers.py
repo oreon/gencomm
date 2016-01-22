@@ -26,7 +26,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 class PatientSerializer(serializers.ModelSerializer):
     displayName = serializers.ReadOnlyField()
-    bed = serializers.PrimaryKeyRelatedField( read_only=True, many=True)
+    bed = serializers.PrimaryKeyRelatedField( read_only=True)
    
     class Meta:
         model = Patient 
