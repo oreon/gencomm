@@ -15,8 +15,6 @@ import datetime
 import os
 
 
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -213,12 +211,7 @@ LOGGING = {
 }
 
 
-from django.contrib.auth.models import User
-from rest_framework import serializers
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
+from basicauth.serializers import UserSerializer
 
 
 def jwt_response_payload_handler(token, user=None, request=None):
