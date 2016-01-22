@@ -24,7 +24,7 @@ from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     SkillLookupViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
-import gencomm.views
+#import gencomm.views
 from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet, \
     ScheduleViewSet, patient_view
 
@@ -60,7 +60,7 @@ router.register(r'schedules', ScheduleViewSet)
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
-    url(r'^$', gencomm.views.home, name='home'),
+ #   url(r'^$', gencomm.views.home, name='home'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),

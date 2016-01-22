@@ -15,6 +15,8 @@ import datetime
 import os
 
 
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -93,10 +95,8 @@ REST_FRAMEWORK = {
     
 }
 
-JWT_AUTH = {
-     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-}
+
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -210,4 +210,25 @@ LOGGING = {
             'handlers': ['console'],
         },
     }
+}
+
+
+from django.contrib.auth.models import User
+from rest_framework import serializers
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+
+
+def jwt_response_payload_handler(token, user=None, request=None):
+    return {
+        'token': token,
+        'user': UserSerializer(user).data
+    }
+
+JWT_AUTH = {
+     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+     'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
 }
