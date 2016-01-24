@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.list import ListView
 from django_fsm import get_available_FIELD_transitions, \
     get_available_user_FIELD_transitions
 from rest_framework import viewsets, permissions, status
@@ -13,6 +14,11 @@ from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     DepartmentLookupSerializer, \
     EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer, \
     DepartmentWritableSerializer, FullEmployeeSerializer, SkillLookupSerializer
+
+
+class DepartmentList(ListView):
+    model = Department
+
 
 
 class LargeResultsSetPagination(PageNumberPagination):

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import datetime
 import os
+import basicauth
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -211,17 +212,10 @@ LOGGING = {
 }
 
 
-from basicauth.serializers import UserSerializer
 
-
-def jwt_response_payload_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'user': UserSerializer(user).data
-    }
 
 JWT_AUTH = {
      'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
      'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-     'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
+#     'JWT_RESPONSE_PAYLOAD_HANDLER': basicauth.serializers.jwt_response_payload_handler
 }

@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
     url(r'^accounts/', include('allauth.urls')),
+  #  url(r'^comm/', include('commerce.urls')),
     #url(r'^grappelli/', include('grappelli.urls')),
    # url(r'^admin_tools/', include('admin_tools.urls')),
     
