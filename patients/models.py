@@ -22,7 +22,8 @@ class Patient(ConcurrentTransitionMixin, Person):
     
     schedules = models.ManyToManyField("Schedule",  blank=True,  related_name="schedules")
     
-    user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, null = True, blank = True)
+    user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, 
+                                null = True, blank = True)
     
     objects = MTManager()
     
@@ -240,7 +241,7 @@ class Measurement(BaseModel):
     notes = models.TextField(null = False, blank = True )
     
     def __str__(self):
-        return self.patient.__str__() +  ' ' + self.patientMeasurement.category.name + ' ' + self.value
+        return   self.patientMeasurement.__str__() + ' ' + str(self.value)
         
 @transaction.atomic
     #@staticmethod       
