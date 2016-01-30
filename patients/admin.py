@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from patients.models import Schedule, Ward, Appointment, Patient, Bed,\
-    ScheduleProcedure, PatientScheduleProcedure
+    ScheduleProcedure, PatientScheduleProcedure, Measurement,\
+    MeasurementCategory, PatientMeasurement
 
 
 class CustomModelAdminMixin(object):
@@ -48,3 +49,7 @@ admin.site.register(Appointment)
 admin.site.register(ScheduleProcedure)
 
 admin.site.register(PatientScheduleProcedure, PatientScheduleProcedureAdmin)
+
+admin.site.register(Measurement)
+admin.site.register(MeasurementCategory)
+admin.site.register(PatientMeasurement)

@@ -26,6 +26,8 @@ class Patient(ConcurrentTransitionMixin, Person):
     
     objects = MTManager()
     
+    primaryPhysician = models.ForeignKey('commerce.Employee', related_name='patients', null=True)
+    
     class Admin:
         list_display = ('displayName', 'firstName', 'lastName', 'state')
         list_filter = ('dob', 'gender')
@@ -216,7 +218,29 @@ class Appointment(BaseModel):
     class Meta:
         unique_together = (("patient", "slot"), ("doctor", "slot"))
         
-        
+class MeasurementCategory(BaseModel):
+    name = models.CharField(null = False, blank = True,  max_length=30)   
+    frequency = models.IntegerField()
+    
+    def __str__(self):
+        return self.name
+    
+class PatientMeasurement(BaseModel):
+    patient = models.ForeignKey(Patient, related_name='measurements',null = False,)
+    category = models.ForeignKey(MeasurementCategory, related_name='measurements',null = False,)
+    notes = models.TextField(null = False, blank = True )
+    
+    def __str__(self):
+        return self.patient.__str__() + ' ' + self.category.name
+    
+class Measurement(BaseModel):
+    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measuredValue',null = False,)
+    value = models.DecimalField(max_digits=6, decimal_places=2)
+    date = models.DateTimeField(null = False, blank = False, )
+    notes = models.TextField(null = False, blank = True )
+    
+    def __str__(self):
+        return self.patient.__str__() +  ' ' + self.patientMeasurement.category.name + ' ' + self.value
         
 @transaction.atomic
     #@staticmethod       
@@ -253,3 +277,4 @@ auditlog.register(Ward)
 auditlog.register(Patient)
 auditlog.register(Bed)
 auditlog.register(Appointment)
+
