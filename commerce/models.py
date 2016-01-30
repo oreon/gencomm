@@ -37,12 +37,14 @@ Gender = (
 class Person(BaseModel): 
 
     gender = models.CharField(max_length=6, choices=Gender, null = False, blank = True)
-    dob = models.DateField(null = False, blank = True, )
+    dob = models.DateField(null = True, blank = True, )
     
     firstName = models.CharField(null = False, blank = True,  max_length=30)
     lastName = models.CharField(null = False, blank = True,  max_length=30)
     
     def age(self):
+        if self.dob is None :
+            return 'DOB not provided'
         return int((datetime.date.today() - self.dob).days / 365.25  )
     
     #address = models.ForeignKey(Address, related_name='person')

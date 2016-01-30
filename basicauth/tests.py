@@ -9,6 +9,7 @@ from . import models
 from patients.models import Patient
  
  
+#To test the signal 
 class TestProfileModel(TestCase):
  
     def test_profile_creation(self):

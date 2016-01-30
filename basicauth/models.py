@@ -10,9 +10,9 @@ from patients.models import Patient
 # Create your models here.
 @receiver(post_save, sender= User)
 def create_profile_for_new_user(sender, created, instance, **kwargs):
-    ''' TODO - use this signal to create blank patient profile 
+    # TODO - use this signal to create blank patient profile 
     if created:
-        profile = Patient(user=instance)
+        profile = Patient(user=instance, owner= instance)
         profile.save()
-    '''
+
     pass

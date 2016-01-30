@@ -48,8 +48,8 @@ class BaseModel(models.Model):
 
 class PersonBase(models.Model): 
 
-	gender = models.CharField(null=False, blank=True  , max_length=30)
-	dob = models.DateField(null=False, blank=True  ,)
+	gender = models.CharField(null=True, blank=False  , max_length=30)
+	dob = models.DateField(null=True, blank=False  ,)
 	 # address = models.ForeignKey(Address, related_name='person')
 	class Meta:
 	 	abstract = True
