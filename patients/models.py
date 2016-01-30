@@ -82,7 +82,7 @@ class ProfilePhoto(models.Model):
 
     profile = models.ForeignKey(Patient, related_name='photos')
     title = models.CharField(max_length=1000, null=True, blank=True)
-    image = models.ImageField(upload_to='images/%Y/%m/%d', null=True, blank=True)
+ #   image = models.ImageField(upload_to='images/%Y/%m/%d', null=True, blank=True)
 
     def __str__(self):
         return self.title or 'noname'

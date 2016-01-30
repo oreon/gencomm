@@ -99,7 +99,10 @@ class Employee(Person):
     def reinstate(self):
         pass
     
-    
+class Asset(models.Model): 
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    department = models.ForeignKey(Department, related_name='assets') 
+    price = models.IntegerField(default = 100)
     
 class Skill(models.Model):
     name = models.CharField(null = False, blank = True,  max_length=30)

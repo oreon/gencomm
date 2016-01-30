@@ -21,19 +21,21 @@ from rest_framework import routers
 from basicauth.views import UserViewSet
 from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     EmployeeCompleteViewSet, SkillViewSet, EmployeeSkillViewSet, \
-    SkillLookupViewSet
+    SkillLookupViewSet, AssetViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
-#import gencomm.views
 from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet, \
     ScheduleViewSet, patient_view
 
 
+#import gencomm.views
 router = routers.SimpleRouter(trailing_slash=False)
 
 router.register(r'skills', SkillViewSet)
 router.register(r'skillsLookup', SkillLookupViewSet)
 
+
+router.register(r'assets', AssetViewSet)
 
 router.register(r'employees', EmployeeViewSet)
 router.register(r'employeesWritable', EmployeeWritableViewSet)

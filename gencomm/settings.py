@@ -31,7 +31,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = (
-    'django_admin_bootstrapped',
+ #   'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-     'django_extensions',
+ #    'django_extensions',
      'basicauth',
      'allauth',
      'auditlog',
@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'commerce',
     'patients',
-    'django_tables2'
+ #   'django_tables2'
 )
 
 SITE_ID = 1
@@ -80,12 +80,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    ),
+    ),  
                   
      'DEFAULT_PERMISSION_CLASSES': (
         #'rest_framework.permissions.AllowAny',
          'rest_framework.permissions.IsAuthenticated',
     ),
+                  
+     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',  
+                                 'rest_framework.filters.SearchFilter', 'rest_framework.filters.OrderingFilter'),             
                   
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
      'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -211,17 +214,17 @@ LOGGING = {
 }
 
 
-from basicauth.serializers import UserSerializer
-
-
-def jwt_response_payload_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'user': UserSerializer(user).data
-    }
+# from basicauth.serializers import UserSerializer
+# 
+# 
+# def jwt_response_payload_handler(token, user=None, request=None):
+#     return {
+#         'token': token,
+#         'user': UserSerializer(user).data
+#     }
 
 JWT_AUTH = {
      'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
      'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-     'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
+ #    'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
 }
