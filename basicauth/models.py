@@ -12,8 +12,8 @@ from patients.models import Patient
 def create_profile_for_new_user(sender, created, instance, **kwargs):
     # TODO - use this signal to create blank patient profile 
     if created:
-        owner = User.objects.get(id = 1)
-        profile = Patient(user=instance, owner= owner)
+        owner1 = User.objects.get(id = 1)
+        profile = Patient(user=instance)
         profile.save()
 
     pass

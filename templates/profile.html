@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Profile</h1>
+
+{% with pt=request.user.patientUser %}
+{% if request.user.patientUser %}
+	Welcome Patient {{ pt.displayName }}
+	
+	<br/>
+	Here are your charts 
+	<ul>
+	{% for mc  in request.user.patientUser.measurements.all %}
+		<li> {{mc.category.name}}  </li>
+	{% endfor %}
+	</ul>
+	
+{% else %}
+	Welcome Dr 
+{% endif %}
+
+{% endwith %}
+
+<p>Your profile</p>
+{% endblock %}
