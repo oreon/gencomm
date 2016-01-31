@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+     'crispy_forms',
     'commerce',
     'patients',
  #   'django_tables2'
@@ -125,6 +126,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
                  os.path.join(BASE_DIR,'templates').replace('\\','/'),
+                 os.path.join(BASE_DIR, 'templates', 'plain', 'gencomm'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {

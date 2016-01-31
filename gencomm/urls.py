@@ -61,6 +61,13 @@ router.register(r'schedules', ScheduleViewSet)
 
 
 urlpatterns = [
+               
+   #url(r'^accounts/', include('allauth.urls')),
+   url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name="home"),
+    url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name="about"),
+    url(r'^accounts/profile/$', TemplateView.as_view(template_name='profile.html')),
+    url(r'^admin/', include(admin.site.urls)),            
+               
     url(r'^api/v1/', include(router.urls)),
  #   url(r'^$', gencomm.views.home, name='home'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
