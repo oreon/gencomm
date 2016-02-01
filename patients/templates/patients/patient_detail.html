@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ object.displayName }}</h2>
+<p><em>by {{ object.lastName }}</em></p>
+<p>{{ object.age }}</p>
+
+<a href="{% url 'patients:patient_edit' object.pk %}">Edit</a>
+|
+<a href="{% url 'patients:patient_delete' object.pk %}">Delete</a>
+
+{% endblock %}

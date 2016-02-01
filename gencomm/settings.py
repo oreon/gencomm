@@ -217,6 +217,10 @@ LOGGING = {
 }
 
 
+# See: http://django-crispy-forms.readthedocs.org/en/latest/install.html#template-packs
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
 # from basicauth.serializers import UserSerializer
 # 
 # 
