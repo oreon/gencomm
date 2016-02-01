@@ -11,7 +11,7 @@
 	Here are your charts 
 	<ul>
 	{% for mc  in request.user.patientUser.measurements.all %}
-	<a href="{% url 'patients:listMeasurements'   %}" class="list-group-item">
+	<a href="{% url 'patients:listMeasurements'  mc.id %}" class="list-group-item">
 		<li> {{mc.category.name}} listMeasurements </li>
 	</a>
 	{% endfor %}

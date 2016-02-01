@@ -1,19 +1,18 @@
-import datetime
+from datetime import datetime
 
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models.signals import m2m_changed
+import django.utils.timezone
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
+from pip.cmdoptions import editable
 
 from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
 import pandas as pd
 from patients.helpers import calcDates
-from pip.cmdoptions import editable
-
-
 
 
 # Create your models here.
@@ -223,6 +222,8 @@ class Appointment(BaseModel):
 class MeasurementCategory(BaseModel):
     name = models.CharField(null = False, blank = True,  max_length=30)   
     frequency = models.IntegerField()
+    typicalMin  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
+    typicalMax  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
     
     def __str__(self):
         return self.name
@@ -237,13 +238,20 @@ class PatientMeasurement(BaseModel):
     
 class Measurement(BaseModel):
     patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measuredValue',null = False,)
-    value = models.DecimalField(max_digits=6, decimal_places=2)
-    date = models.DateTimeField(null = False, blank = False, )
+    value = models.DecimalField(max_digits=4, decimal_places=2)
+    date = models.DateTimeField(null = False, blank = False, default = django.utils.timezone.now)
     notes = models.TextField(null = False, blank = True )
     
     def __str__(self):
         return   self.patientMeasurement.__str__() + ' ' + str(self.value)
         
+class MeasurementTimelineEvent(BaseModel):
+    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='timelineEvent',null = False,)
+    date = models.DateField(null = False, blank = False, default = datetime.now())
+    notes = models.TextField(null = False, blank = True )
+    
+    def __str__(self):
+        return   self.patientMeasurement.__str__() + ' ' + self.notes
 @transaction.atomic
     #@staticmethod       
 def ptSchedule_changed(sender, instance,  **kwargs):

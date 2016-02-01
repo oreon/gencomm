@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}{{ department.departmentname }}{% endblock %}
+{% block title %} Update - {% endblock %}
 
 {% block content %}
-    <h1>{{ department.departmentname }}</h1>
-    <form class="form-horizontal" method="post" action="{% url 'updateMeasurement' %}">
+    <h1>{{ object.displayName }}</h1>
+    <form class="form-horizontal" method="post" action="">
         {% csrf_token %}
-        {{ form|crispy }}
+        {{ form | crispy }}
         <div class="control-group">
           <div class="controls">
             <button type="submit" class="btn">Update</button>

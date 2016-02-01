@@ -51,7 +51,9 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+    'floppyforms',
      'crispy_forms',
+     
     'commerce',
     'patients',
  #   'django_tables2'

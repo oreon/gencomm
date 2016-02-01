@@ -19,8 +19,9 @@ from rest_framework.response import Response
 
 from commerce.views import BaseViewSet, MultiSerializerViewSetMixin
 import django_tables2 as tables
+from patients.forms import MeasurementForm
 from patients.models import Bed, Patient, BedStay, Admission, Schedule, \
-    PatientScheduleProcedure, Measurement
+    PatientScheduleProcedure, Measurement, PatientMeasurement
 from patients.serializers import BedSerializer, PatientSerializer, \
     AdmissionSerializer, ScheduleSerializer
 
@@ -170,11 +171,28 @@ def patient_view(request, row_id): # Shows one row (all values in the object) in
     sptable = PatientScheduleProcedureTable(pt.scheduledProcedures.all())
     RequestConfig(request).configure(sptable)   
     return render(request , 'admin/patients/patient/viewPatient.html', {'patient': pt, 'sptable':sptable})
+
+
+
+
+
+    
    
     
 class MeasurementListView(LoginRequiredMixin,   ListView):
     model = Measurement
     paginate_by = 3
+    patientMeasurement = None
+   
+    def getCurrentPatientMeasurement(self):
+        if self.patientMeasurement is None:
+            self.patientMeasurement = PatientMeasurement.objects.get(id = self.kwargs['pm'])
+        return self.patientMeasurement
+    
+    def get_queryset(self, **kwargs):
+        pm = self.kwargs.get('pm',0)
+        """Returns Polls that were created today"""
+        return Measurement.objects.filter(patientMeasurement=pm)
   #  filter_set = MeasurementFilter
     
     def get_context_data(self, **kwargs):
@@ -184,10 +202,23 @@ class MeasurementListView(LoginRequiredMixin,   ListView):
         return context
 
 class MeasurementUpdateView(LoginRequiredMixin, UpdateView):
-    class Meta:
-        model = Measurement
-        fields = ('value', 'date', 'notes')
+    
+    model = Measurement
+    fields = ('value', 'date', 'notes')
+    
+class MeasurementCreateView(LoginRequiredMixin, CreateView):
    
+    model = Measurement
+#    fields = ('value', 'date', 'notes')
+    form_class = MeasurementForm
+     
+    def form_valid(self, form):
+         form.instance.patientMeasurement = PatientMeasurement.objects.get(id = self.kwargs['pm'])
+         return super(MeasurementCreateView, self).form_valid(form)
+     
+    def get_success_url(self):
+         return  reverse_lazy('patients:listMeasurements', kwargs={'pm': self.kwargs['pm']})
+
     
 class MeasurementDetailView(LoginRequiredMixin, DetailView):
     model = Measurement
@@ -205,6 +236,8 @@ class PatientDetail(DetailView):
 class PatientCreate(CreateView):
     model = Patient
     fields = '__all__'
+    def get_success_url(self):
+        return  reverse_lazy('patients:patient_detail', kwargs={'pk': self.object.id})
 
 class PatientUpdate(UpdateView):
     model = Patient
