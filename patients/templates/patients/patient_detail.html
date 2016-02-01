@@ -6,6 +6,46 @@
 <p><em>by {{ object.lastName }}</em></p>
 <p>{{ object.age }}</p>
 
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#profile" role="tab">Profile</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#scripts" role="tab">Scripts</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#settings" role="tab">Labs</a>
+  </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane active" id="home" role="tabpanel">
+  {% for sp in patient.scheduledProcedures.all %}
+<li>{{ sp.scheduleProcedure.name }} {{sp.date}}  </l1>
+{% endfor %}
+  
+  </div>
+  <div class="tab-pane" id="profile" role="tabpanel">...
+  <ul>
+	{% for mc  in request.user.patientUser.measurements.all %}
+	<a href="{% url 'patients:listMeasurements'  mc.id %}" class="list-group-item">
+		<li> {{mc.category.name}} listMeasurements </li>
+	</a>
+	{% endfor %}
+	</ul>
+  
+  </div>
+  <div class="tab-pane" id="scripts" role="tabpanel">Please take this medicines .</div>
+  <div class="tab-pane" id="settings" role="tabpanel">No tests for now.</div>
+</div>
+
+
+
 <a href="{% url 'patients:patient_edit' object.pk %}">Edit</a>
 |
 <a href="{% url 'patients:patient_delete' object.pk %}">Delete</a>
