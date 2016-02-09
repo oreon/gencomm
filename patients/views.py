@@ -3,10 +3,15 @@ import json
 import sys
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, render_to_response
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.defaulttags import now
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from django.views.generic.list import ListView
 from django_tables2.config import RequestConfig
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import detail_route, list_route
@@ -14,13 +19,13 @@ from rest_framework.response import Response
 
 from commerce.views import BaseViewSet, MultiSerializerViewSetMixin
 import django_tables2 as tables
+from patients.forms import MeasurementForm
 from patients.models import Bed, Patient, BedStay, Admission, Schedule, \
-    PatientScheduleProcedure
+    PatientScheduleProcedure, Measurement, PatientMeasurement
 from patients.serializers import BedSerializer, PatientSerializer, \
     AdmissionSerializer, ScheduleSerializer
 
 
-    
 # Create your views here.
 class BedViewSet( BaseViewSet):
     queryset = Bed.objects.all()
@@ -166,5 +171,80 @@ def patient_view(request, row_id): # Shows one row (all values in the object) in
     sptable = PatientScheduleProcedureTable(pt.scheduledProcedures.all())
     RequestConfig(request).configure(sptable)   
     return render(request , 'admin/patients/patient/viewPatient.html', {'patient': pt, 'sptable':sptable})
+
+
+
+
+
+    
    
     
+class MeasurementListView(LoginRequiredMixin,   ListView):
+    model = Measurement
+    paginate_by = 3
+    patientMeasurement = None
+   
+    def getCurrentPatientMeasurement(self):
+        if self.patientMeasurement is None:
+            self.patientMeasurement = PatientMeasurement.objects.get(id = self.kwargs['pm'])
+        return self.patientMeasurement
+    
+    def get_queryset(self, **kwargs):
+        pm = self.kwargs.get('pm',0)
+        """Returns Polls that were created today"""
+        return Measurement.objects.filter(patientMeasurement=pm)
+  #  filter_set = MeasurementFilter
+    
+    def get_context_data(self, **kwargs):
+        context = super(MeasurementListView, self).get_context_data(**kwargs)
+        context['current_request'] = self.request.META['QUERY_STRING']
+        #context['form'] = ActorSearchForm()
+        return context
+
+class MeasurementUpdateView(LoginRequiredMixin, UpdateView):
+    
+    model = Measurement
+    fields = ('value', 'date', 'notes')
+    
+class MeasurementCreateView(LoginRequiredMixin, CreateView):
+   
+    model = Measurement
+#    fields = ('value', 'date', 'notes')
+    form_class = MeasurementForm
+     
+    def form_valid(self, form):
+         form.instance.patientMeasurement = PatientMeasurement.objects.get(id = self.kwargs['pm'])
+         return super(MeasurementCreateView, self).form_valid(form)
+     
+    def get_success_url(self):
+         return  reverse_lazy('patients:listMeasurements', kwargs={'pm': self.kwargs['pm']})
+
+    
+class MeasurementDetailView(LoginRequiredMixin, DetailView):
+    model = Measurement
+    # These next two lines tell the view to index lookups by username
+    slug_field = "name"
+    slug_url_kwarg = "name"
+    
+    
+class PatientList(ListView):
+    model = Patient
+
+class PatientDetail(DetailView):
+    model = Patient
+
+class PatientCreate(CreateView):
+    model = Patient
+    fields = '__all__'
+    def get_success_url(self):
+        return  reverse_lazy('patients:patient_detail', kwargs={'pk': self.object.id})
+
+class PatientUpdate(UpdateView):
+    model = Patient
+    fields = '__all__'
+    def get_success_url(self):
+        return  reverse_lazy('patients:patient_detail', kwargs={'pk': self.object.id})
+
+class PatientDelete(DeleteView):
+    model = Patient
+    success_url = reverse_lazy('patient_list')

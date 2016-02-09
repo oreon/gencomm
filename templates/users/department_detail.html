@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}User: {{ object.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <h2>{{ object.name }}</h2>
+      {% if object.name %}
+        <p>{{ object.maxcap }}</p>
+      {% endif %}
+    </div>
+  </div>
+  
+    <div class="list-group">
+        {% for asset in object.assets.all %}
+          {{ asset.name }}
+        {% endfor %}
+    </div>
+    
+      <div class="list-group">
+        {% for emp in object.employees.all %}
+          {{emp.name}}
+        {% endfor %}
+    </div>
+
+
+</div>
+{% endblock content %}
+

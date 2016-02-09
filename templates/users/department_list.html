@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}{% load i18n %}
+{% block title %}Members{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>departments</h2>
+    
+    
+    <form class="form-inline" action="" method="GET">
+        {{ form }}
+        <button class="btn" type="submit">Search</button>
+        </fieldset>
+    </form>
+
+    <div class="list-group">
+        {% for department in department_list %}
+          <a href="{% url 'department-detail' department.name  %}" class="list-group-item">
+            <h4 class="list-group-item-heading">{{ department.name }}  {{department.maxcap  }}</h4>
+          </a>
+        {% endfor %}
+        
+		{% if is_paginated %}
+	        {% include "paginator.html" %}
+	    {% endif %}
+    </div>
+    
+    
+
+{% endblock content %}

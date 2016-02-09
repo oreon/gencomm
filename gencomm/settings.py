@@ -51,6 +51,9 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+    'floppyforms',
+     'crispy_forms',
+
     'django_nvd3',
     'commerce',
     'patients',
@@ -126,6 +129,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
                  os.path.join(BASE_DIR,'templates').replace('\\','/'),
+                 os.path.join(BASE_DIR, 'templates', 'plain', 'gencomm'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -143,8 +147,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'gencomm.wsgi.application'
-
-#AUTH_USER_MODEL = 'basicauth.models.CustomUser'
 
 #BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 
@@ -226,6 +228,10 @@ LOGGING = {
         },
     }
 }
+
+
+# See: http://django-crispy-forms.readthedocs.org/en/latest/install.html#template-packs
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 # from basicauth.serializers import UserSerializer
