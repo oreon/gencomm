@@ -12,6 +12,7 @@ from commerce.modelsBase import BaseModel, MTManager
 import pandas as pd
 from patients.helpers import calcDates
 from pip.cmdoptions import editable
+#from basicauth.models import PatientUser
 
 
 

@@ -10,6 +10,7 @@ from django_fsm import FSMField, transition
 import commerce
 from commerce.modelsBase import BaseModel
 from commerce.modelsBase import DepartmentBase
+#from basicauth.models import EmployeeUser
 
 
 class Address(models.Model): 
@@ -79,8 +80,7 @@ class Employee(Person):
     state = FSMField(default='hired')
     
     user = models.OneToOneField(User, related_name = 'employeeUser', on_delete=models.CASCADE, null = True, blank = True)
-    
-    
+        
     @transition(field=state, source='hired', target='active')
     def join(self):
         pass

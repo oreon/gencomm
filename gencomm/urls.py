@@ -24,6 +24,7 @@ from commerce.views import DepartmentLookupViewSet, DepartmentWritableViewSet, \
     SkillLookupViewSet, AssetViewSet
 from commerce.views import EmployeeViewSet, DepartmentViewSet, \
     EmployeeLookupViewSet, DepartmentCompleteViewSet, EmployeeWritableViewSet
+from gencomm import views
 from patients.views import PatientViewSet, BedViewSet, AdmissionViewSet, \
     ScheduleViewSet, patient_view
 
@@ -96,4 +97,8 @@ urlpatterns = [
     url(r'^password-change/$',
         TemplateView.as_view(template_name="password_change.html"),
         name='password-change'),
+               
+    url(r'^linechart/', views.demo_linechart, name='demo_linechart'),
+    url(r'^linechart_without_date/', views.demo_linechart_without_date, name='demo_linechart_without_date'),
+ 
 ]

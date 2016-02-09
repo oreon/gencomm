@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+    'django_nvd3',
     'commerce',
     'patients',
  #   'django_tables2'
@@ -143,6 +144,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gencomm.wsgi.application'
 
+#AUTH_USER_MODEL = 'basicauth.models.CustomUser'
+
 #BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 
 # Database
@@ -169,12 +172,22 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+import environ
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
+APPS_DIR = ROOT_DIR.path('gencomm')
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    str(APPS_DIR.path('static')),
+)
+
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 
 if DEBUG:

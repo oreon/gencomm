@@ -7,6 +7,22 @@ from gencomm import settings
 from patients.models import Patient
 
 
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+ 
+'''
+class CustomUser(AbstractUser):
+    pass
+ 
+class PatientUser(CustomUser):
+    pass
+ 
+class EmployeeUser(CustomUser):
+    spcialization = models.CharField(null=True , blank= True)
+
+'''
+
+
 # Create your models here.
 @receiver(post_save, sender= User)
 def create_profile_for_new_user(sender, created, instance, **kwargs):
