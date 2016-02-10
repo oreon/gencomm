@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 import sys
 
@@ -201,11 +201,59 @@ class MeasurementListView(LoginRequiredMixin,   ListView):
         #context['form'] = ActorSearchForm()
         return context
     
-    def getlinechart(self, **kwargs):
+    def getlinechartAllPatients(self, **kwargs):
+        pm = self.kwargs.get('pm',0)
+        """Returns Polls that were created today"""
+        measurements =  Measurement.objects.filter(patientMeasurement__cateogry = 2 ).order_by('patient').order_by('date')
+    #    start_time = int(time.mktime(datetime.datetime(2012, 6, 1).timetuple()) * 1000)
+    #    xdata = list(map(lambda x: str(datetime.strptime(str(x.date), '%Y-%m-%d %H:%M:%S+00:00') ), measurements))
+    
+        patient_ids = set(map(lambda x: x.patient.id, measurements))
+        
+        ydatas = []
+    
+        xdata = list(map(lambda x: int(x.date.strftime("%s")) * 1000,  measurements))
+        for id in patient_ids:
+            patientMsmts = filter(lambda x: x.patient.id == id, measurements)
+            ydatas.append( list(map(lambda x: int(x.value), patientMsmts))  )
+        
+        #ydata2 = list(map(lambda x: x * 2, ydata))
+    
+        tooltip_date = "%d %b %Y %H:%M:%S %p"
+        extra_serie1 = {
+            "tooltip": {"y_start": "", "y_end": " cal"},
+            "date_format": tooltip_date,
+            'color': '#a4c639'
+        }
+        chartdata = {'x': xdata,
+                     'name1': 'series 1', 'y1': ydatas, 'extra1': extra_serie1,
+                     #'name2': 'series 2', 'y2': ydata2, 'extra2': extra_serie2
+                     }
+    
+        charttype = "lineChart"
+        chartcontainer = 'linechart_container'  # container name
+        data = {
+            'charttype': charttype,
+            'chartdata': chartdata,
+            'chartcontainer': chartcontainer,
+            'extra': {
+                'x_is_date': True,
+                'x_axis_format': '%d %b %Y %H',
+                'tag_script_js': True,
+                'jquery_on_ready': False,
+            }
+        }
+        return data
+    
+    
+    
+    
+    def getlinechartPt(self, **kwargs):
         measurements = self.get_queryset().all();
     #    start_time = int(time.mktime(datetime.datetime(2012, 6, 1).timetuple()) * 1000)
-        xdata = list(map(lambda x: str(x.date), measurements))
-        ydata = list(map(lambda x: str(x.value), measurements))
+    #    xdata = list(map(lambda x: str(datetime.strptime(str(x.date), '%Y-%m-%d %H:%M:%S+00:00') ), measurements))
+        xdata = list(map(lambda x: int(x.date.strftime("%s")) * 1000,  measurements))
+        ydata = list(map(lambda x: int(x.value), measurements))
         ydata2 = list(map(lambda x: x * 2, ydata))
     
         tooltip_date = "%d %b %Y %H:%M:%S %p"

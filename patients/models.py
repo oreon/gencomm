@@ -226,26 +226,27 @@ class MeasurementCategory(BaseModel):
     frequency = models.IntegerField()
     typicalMin  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
     typicalMax  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
-
+    
+ 
     def __str__(self):
         return self.name
     
 class PatientMeasurement(BaseModel):
-    patient = models.ForeignKey(Patient, related_name='measurements',null = False,)
-    category = models.ForeignKey(MeasurementCategory, related_name='measurements',null = False,)
+    patient = models.ForeignKey(Patient, related_name='patientMeasurements',null = False,)
+    category = models.ForeignKey(MeasurementCategory, related_name='patientMeasurements',null = False,)
     notes = models.TextField(null = False, blank = True )
     
     def __str__(self):
         return self.patient.__str__() + ' ' + self.category.name
     
 class Measurement(BaseModel):
-    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measuredValue',null = False,)
+    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measurements',null = False,)
     value = models.DecimalField(max_digits=4, decimal_places=2)
     date = models.DateTimeField(null = False, blank = False, default = django.utils.timezone.now)
     notes = models.TextField(null = False, blank = True )
     
     def __str__(self):
-        return   self.patientMeasurement.__str__() + ' ' + str(self.value)
+        return   self.patientMeasurement.__str__() + ' ' + str(self.date) + ' ' + str(self.value)
         
 class MeasurementTimelineEvent(BaseModel):
     patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='timelineEvent',null = False,)
