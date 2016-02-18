@@ -13,6 +13,7 @@ from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
 import pandas as pd
 from patients.helpers import calcDates
+import statistics
 
 
 
@@ -236,17 +237,61 @@ class PatientMeasurement(BaseModel):
     category = models.ForeignKey(MeasurementCategory, related_name='patientMeasurements',null = False,)
     notes = models.TextField(null = False, blank = True )
     
+    def getAllValuesForPatient(self, patient):
+        measurements = Measurement.objects.filter(patientMeasurement__patient = patient)
+        return measurements
+        
+    def getAllValuesForPhysicianCategory(self , physician, category):
+        
+        measurements = Measurement.objects.filter(patientMeasurement__patient__primaryPhysician = physician, 
+                                              patientMeasurement__category__id = 2).order_by('patientMeasurement__patient').all() 
+        
+        def getPatientId(x): return x.patientMeasurement.patient.id
+        
+        return self.extractDict(getPatientId, measurements)
+    
+    def getMedianForPhysicianCategory(self , physician, category):
+        
+        measurements = Measurement.objects.filter(patientMeasurement__patient__primaryPhysician = physician, 
+                                              patientMeasurement__category__id = 2).order_by('patientMeasurement__patient').all() 
+        
+        def getMeasurementDate(x): return x.date
+        
+        dict =  self.extractDict(getMeasurementDate, measurements)
+        
+        map(lambda x :statistics.median(dict[x]), dict.keys())
+        
+    def extractDict(self, func, targetLst):
+        patient_ids = set(map(lambda x: func(x), targetLst))
+        
+        ptmsts = {}
+        for ptid in patient_ids:
+            patientMsmts = list(filter(lambda x:func(x) == ptid, targetLst))
+            try:
+                ptmsts[ptid].append(patientMsmts)
+            except KeyError:
+                ptmsts[ptid] = []
+                ptmsts[ptid].append(patientMsmts)
+                       
+        return ptmsts
+    
     def __str__(self):
         return self.patient.__str__() + ' ' + self.category.name
     
+    class Meta:
+        unique_together = ("patient", "category")
+    
 class Measurement(BaseModel):
     patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measurements',null = False,)
-    value = models.DecimalField(max_digits=4, decimal_places=2)
+    value = models.DecimalField(max_digits=6, decimal_places=2)
     date = models.DateTimeField(null = False, blank = False, default = django.utils.timezone.now)
     notes = models.TextField(null = False, blank = True )
     
     def __str__(self):
         return   self.patientMeasurement.__str__() + ' ' + str(self.date) + ' ' + str(self.value)
+    
+    class Meta:
+        ordering = ('-date',)
         
 class MeasurementTimelineEvent(BaseModel):
     patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='timelineEvent',null = False,)

@@ -191,7 +191,6 @@ class MeasurementListView(LoginRequiredMixin,   ListView):
     
     def get_queryset(self, **kwargs):
         pm = self.kwargs.get('pm',0)
-        """Returns Polls that were created today"""
         return Measurement.objects.filter(patientMeasurement=pm).order_by('date')
   #  filter_set = MeasurementFilter
     
