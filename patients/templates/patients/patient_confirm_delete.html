@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete {{ object.title }}?</p>
+    <input type="submit" value="yes" />
+    <a href="{% url 'patient_list' %}">no</a>
+</form>
+
+{% endblock %}

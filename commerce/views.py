@@ -1,24 +1,28 @@
+from django.db import models
 from django.shortcuts import render
+import django_filters
 from django_fsm import get_available_FIELD_transitions, \
     get_available_user_FIELD_transitions
-from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import detail_route
+from rest_framework import viewsets, permissions, status, filters
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from commerce.models import Employee, Department, Skill, EmployeeSkill
+from commerce.models import Employee, Department, Skill, EmployeeSkill, Asset
 from commerce.permissions import IsOwnerOrReadOnly
 from commerce.serializers import EmployeeSerializer, DepartmentSerializer, \
     EmployeeLookupSerializer, FullDepartmentSerializer, \
     DepartmentLookupSerializer, \
     EmployeeWritableSerializer, SkillSerializer, EmployeeSkillSerializer, \
-    DepartmentWritableSerializer, FullEmployeeSerializer, SkillLookupSerializer
+    DepartmentWritableSerializer, FullEmployeeSerializer, SkillLookupSerializer, \
+    AssetSerializer
+from gencomm import settings
 
 
 class LargeResultsSetPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 10000
     page_size_query_param = 'page_size'
-    max_page_size = 10000
+    max_page_size = 30000
 
 
 class ReadNestedWriteFlatMixin(object):
@@ -36,7 +40,7 @@ class ReadNestedWriteFlatMixin(object):
 
 class BaseViewSet( viewsets.ModelViewSet):
     
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -88,13 +92,38 @@ class MultiSerializerViewSetMixin(object):
         except (KeyError, AttributeError):
             return super(MultiSerializerViewSetMixin, self).get_serializer_class()
     
+class EmployeeFilter(django_filters.FilterSet):
+    filter_overrides = {
+        models.CharField: {
+            'filter_class': django_filters.CharFilter,
+            'extra': lambda f: {
+                'lookup_type': 'icontains',
+            }
+        }
+    }
+    
+ #   min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
+ #   max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
+    class Meta:
+        model =  Employee
+        fields = ['firstName', 'lastName', 'department__id']
 
 # Create your views here.
 class EmployeeViewSet(MultiSerializerViewSetMixin, BaseViewSet):
+    
+    #def get_queryset(self):
+    #    queryset = Employee.objects.all()
+    
+    filter_class = EmployeeFilter
+    search_fields = ('firstName', 'lastName', 'department__id')
+    
+    
     queryset = Employee.objects.all()  #.select_related('department', 'owner')
     
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly,)
+    ordering_fields = ('firstName', 'lastName')
+    ordering = ('-id',)
+    
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly,)
     
     serializer_class = EmployeeSerializer
     
@@ -140,11 +169,26 @@ class EmployeeCompleteViewSet(viewsets.ModelViewSet):
 class DepartmentLookupViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentLookupSerializer
+    
+    
+class AssetViewSet(viewsets.ModelViewSet):
+    queryset = Asset.objects.all()
+    
+    serializer_class = AssetSerializer
 
 class DepartmentViewSet(MultiSerializerViewSetMixin,BaseViewSet):
     queryset = Department.objects.all()
     
     serializer_class = DepartmentSerializer
+    
+    @detail_route(methods=['get'])
+    def getEmployees(self,request, *args, **kwargs):
+        return Response( EmployeeSerializer(self.get_object().employees.all(), many=True).data, status=status.HTTP_200_OK)
+    
+    @detail_route(methods=['get'])
+    def getAssets(self,request, *args, **kwargs):
+        return Response( AssetSerializer(self.get_object().assets.all(), many=True).data, status=status.HTTP_200_OK)
+
     
     serializer_classes = {
                'writable': DepartmentWritableSerializer,
@@ -167,6 +211,7 @@ class SkillLookupViewSet(viewsets.ModelViewSet):
     
 class SkillViewSet( viewsets.ModelViewSet):
     queryset = Skill.objects.all()
+    pagination_class = LargeResultsSetPagination
     
     def get_serializer_class(self, *args, **kwargs):
         return SkillSerializer

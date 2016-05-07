@@ -3,8 +3,8 @@ import datetime
 import pandas as pd
 
 
-def calcDates(frequency):
-    END_DATE = pd.to_datetime('2016-12-31')
+def calcDates(frequency, endDate = '2017-12-31'):
+    END_DATE = pd.to_datetime(endDate)
     timeNow = datetime.datetime.today()
     anotherTime = timeNow
     

@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from patients.models import Schedule, Ward, Appointment, Patient, Bed,\
-    ScheduleProcedure, PatientScheduleProcedure
+    ScheduleProcedure, PatientScheduleProcedure, Measurement,\
+    MeasurementCategory, PatientMeasurement
 
 
 class CustomModelAdminMixin(object):
@@ -13,8 +14,16 @@ class CustomModelAdminMixin(object):
 class WardAdmin(CustomModelAdminMixin, admin.ModelAdmin):
     pass
 
-class PatientAdmin(CustomModelAdminMixin, admin.ModelAdmin):
-    pass
+class PatientAdmin( admin.ModelAdmin):
+    list_display = ('id','displayName', 'firstName', 'lastName', 'state','show_view_url')
+    list_filter = ('dob', 'gender')
+    ordering = ('-id',)
+    search_fields = ('firstName','lastName', 'dob')
+    
+    def show_view_url(self, obj):
+        return '<a href="viewPatient/%d/">View</a>' % (obj.id)
+    show_view_url.allow_tags = True
+    
 
 class BedAdmin(CustomModelAdminMixin, admin.ModelAdmin):
     pass
@@ -40,3 +49,7 @@ admin.site.register(Appointment)
 admin.site.register(ScheduleProcedure)
 
 admin.site.register(PatientScheduleProcedure, PatientScheduleProcedureAdmin)
+
+admin.site.register(Measurement)
+admin.site.register(MeasurementCategory)
+admin.site.register(PatientMeasurement)

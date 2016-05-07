@@ -10,6 +10,7 @@ from django_fsm import FSMField, transition
 import commerce
 from commerce.modelsBase import BaseModel
 from commerce.modelsBase import DepartmentBase
+#from basicauth.models import EmployeeUser
 
 
 class Address(models.Model): 
@@ -37,12 +38,14 @@ Gender = (
 class Person(BaseModel): 
 
     gender = models.CharField(max_length=6, choices=Gender, null = False, blank = True)
-    dob = models.DateField(null = False, blank = True, )
+    dob = models.DateField(null = True, blank = True, )
     
     firstName = models.CharField(null = False, blank = True,  max_length=30)
     lastName = models.CharField(null = False, blank = True,  max_length=30)
     
     def age(self):
+        if self.dob is None :
+            return 'DOB not provided'
         return int((datetime.date.today() - self.dob).days / 365.25  )
     
     #address = models.ForeignKey(Address, related_name='person')
@@ -77,8 +80,7 @@ class Employee(Person):
     state = FSMField(default='hired')
     
     user = models.OneToOneField(User, related_name = 'employeeUser', on_delete=models.CASCADE, null = True, blank = True)
-    
-    
+        
     @transition(field=state, source='hired', target='active')
     def join(self):
         pass
@@ -99,7 +101,10 @@ class Employee(Person):
     def reinstate(self):
         pass
     
-    
+class Asset(models.Model): 
+    name = models.CharField(null = False, blank = True,  max_length=30)
+    department = models.ForeignKey(Department, related_name='assets') 
+    price = models.IntegerField(default = 100)
     
 class Skill(models.Model):
     name = models.CharField(null = False, blank = True,  max_length=30)

@@ -1,28 +1,42 @@
-import datetime
+from datetime import datetime
 
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models.signals import m2m_changed
+import django.utils.timezone
 from django_fsm import FSMField, transition, ConcurrentTransitionMixin
+from pip.cmdoptions import editable
 
 from commerce.models import Person, Gender, Employee
 from commerce.modelsBase import BaseModel, MTManager
 import pandas as pd
 from patients.helpers import calcDates
+import statistics
+
+
 
 
 # Create your models here.
 class Patient(ConcurrentTransitionMixin, Person): 
 
-    state = FSMField(default='outpatient')
+    state = FSMField(default='outpatient', protected=True, editable=False)
     
     schedules = models.ManyToManyField("Schedule",  blank=True,  related_name="schedules")
     
-    user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, null = True, blank = True)
+    user = models.OneToOneField(User, related_name = 'patientUser', editable=False, on_delete=models.CASCADE, 
+                                null = True, blank = True)
     
     objects = MTManager()
+    
+    primaryPhysician = models.ForeignKey('commerce.Employee', related_name='patients', null=True)
+    
+    class Admin:
+        list_display = ('displayName', 'firstName', 'lastName', 'state')
+        list_filter = ('dob', 'gender')
+        ordering = ('-id',)
+        search_fields = ('firstName','lastName', 'dob')
     
 
     def getBed(self):
@@ -56,9 +70,7 @@ class Patient(ConcurrentTransitionMixin, Person):
         bed = self.getBed()
         self.getCurrentAdmission().markBedStayEnd()
         self.getCurrentAdmission().movePatientIntoBed(newbed)
-        
-        
- 
+         
     
     @transition(field=state, source='admitted', target='outpatient')
     def discharge(self, note):
@@ -67,15 +79,16 @@ class Patient(ConcurrentTransitionMixin, Person):
         admission.dischargeDate = datetime.date.today()
         #admission.dischargeNote = note
         admission.save()
-        pass 
+        pass
     
+   
 
 
 class ProfilePhoto(models.Model):
 
     profile = models.ForeignKey(Patient, related_name='photos')
     title = models.CharField(max_length=1000, null=True, blank=True)
-    image = models.ImageField(upload_to='images/%Y/%m/%d', null=True, blank=True)
+ #   image = models.ImageField(upload_to='images/%Y/%m/%d', null=True, blank=True)
 
     def __str__(self):
         return self.title or 'noname'
@@ -189,7 +202,7 @@ class ScheduleProcedure(BaseModel):
 class PatientScheduleProcedure(BaseModel): 
     
     scheduleProcedure = models.ForeignKey(ScheduleProcedure, related_name='pocedures', on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, related_name='patientScheduledProcedures', on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, related_name='scheduledProcedures', on_delete=models.CASCADE)
     date = models.DateField(null = False, blank = False, )
     notes = models.TextField(null = False, blank = True )
     performDate = models.DateField(null = True, blank = True, )
@@ -209,19 +222,94 @@ class Appointment(BaseModel):
     class Meta:
         unique_together = (("patient", "slot"), ("doctor", "slot"))
         
-
-
-        
- 
-@transaction.atomic       
-def ptSchedule_changed(sender, instance,  **kwargs):
+class MeasurementCategory(BaseModel):
+    name = models.CharField(null = False, blank = True,  max_length=30)   
+    frequency = models.IntegerField()
+    typicalMin  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
+    typicalMax  = models.DecimalField(max_digits=4, decimal_places=2, null = True)
     
+ 
+    def __str__(self):
+        return self.name
+    
+class PatientMeasurement(BaseModel):
+    patient = models.ForeignKey(Patient, related_name='patientMeasurements',null = False,)
+    category = models.ForeignKey(MeasurementCategory, related_name='patientMeasurements',null = False,)
+    notes = models.TextField(null = False, blank = True )
+    
+    def getAllValuesForPatient(self, patient):
+        measurements = Measurement.objects.filter(patientMeasurement__patient = patient)
+        return measurements
+        
+    def getAllValuesForPhysicianCategory(self , physician, category):
+        
+        measurements = Measurement.objects.filter(patientMeasurement__patient__primaryPhysician = physician, 
+                                              patientMeasurement__category__id = 2).order_by('patientMeasurement__patient').all() 
+        
+        def getPatientId(x): return x.patientMeasurement.patient.id
+        
+        return self.extractDict(getPatientId, measurements)
+    
+    def getMedianForPhysicianCategory(self , physician, category):
+        
+        measurements = Measurement.objects.filter(patientMeasurement__patient__primaryPhysician = physician, 
+                                              patientMeasurement__category__id = 2).order_by('patientMeasurement__patient').all() 
+        
+        def getMeasurementDate(x): return x.date
+        
+        dict =  self.extractDict(getMeasurementDate, measurements)
+        
+        map(lambda x :statistics.median(dict[x]), dict.keys())
+        
+    def extractDict(self, func, targetLst):
+        patient_ids = set(map(lambda x: func(x), targetLst))
+        
+        ptmsts = {}
+        for ptid in patient_ids:
+            patientMsmts = list(filter(lambda x:func(x) == ptid, targetLst))
+            try:
+                ptmsts[ptid].append(patientMsmts)
+            except KeyError:
+                ptmsts[ptid] = []
+                ptmsts[ptid].append(patientMsmts)
+                       
+        return ptmsts
+    
+    def __str__(self):
+        return self.patient.__str__() + ' ' + self.category.name
+    
+    class Meta:
+        unique_together = ("patient", "category")
+    
+class Measurement(BaseModel):
+    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='measurements',null = False,)
+    value = models.DecimalField(max_digits=6, decimal_places=2)
+    date = models.DateTimeField(null = False, blank = False, default = django.utils.timezone.now)
+    notes = models.TextField(null = False, blank = True )
+    
+    def __str__(self):
+        return   self.patientMeasurement.__str__() + ' ' + str(self.date) + ' ' + str(self.value)
+    
+    class Meta:
+        ordering = ('-date',)
+        
+class MeasurementTimelineEvent(BaseModel):
+    patientMeasurement = models.ForeignKey(PatientMeasurement, related_name='timelineEvent',null = False,)
+    date = models.DateField(null = False, blank = False, default = datetime.now())
+    notes = models.TextField(null = False, blank = True )
+
+    def __str__(self):
+        return   self.patientMeasurement.__str__() + ' ' + self.notes
+@transaction.atomic
+    #@staticmethod       
+def ptSchedule_changed(sender, instance,  **kwargs):
+        
     patient = instance
     pk_set = kwargs.pop('pk_set', None)
     action = kwargs.pop('action', None)
     
     if action == 'pre_add':
-        patient.patientScheduledProcedures.filter(performDate__isnull = True).delete()
+        patient.scheduledProcedures.filter(performDate__isnull = True).delete()
     
     elif action == 'post_add':
 
@@ -232,9 +320,7 @@ def ptSchedule_changed(sender, instance,  **kwargs):
                     try:
                         PatientScheduleProcedure.objects.create(patient = patient, scheduleProcedure = procedure, date = date)
                     except Exception as err:
-                        print (err)
-        #print (schedule.name)
-    # Do something
+                        print (err) 
     
         
 
@@ -249,3 +335,4 @@ auditlog.register(Ward)
 auditlog.register(Patient)
 auditlog.register(Bed)
 auditlog.register(Appointment)
+

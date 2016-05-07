@@ -2,6 +2,7 @@
 import inspect
 
 from auditlog.models import AuditlogHistoryField
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -26,7 +27,7 @@ class MTManager(models.Manager):
 
 class BaseModel(models.Model):
     
-    owner = models.ForeignKey('auth.User', null = False, blank = True, editable=False)
+    owner = models.ForeignKey(User, null = True, blank = True, editable=False)
     added = models.DateTimeField(auto_now_add=True, null = False, blank = True)
     updated = models.DateTimeField(auto_now=True, null = False, blank = True)
     history = AuditlogHistoryField()
@@ -42,14 +43,14 @@ class BaseModel(models.Model):
         else: 
             form=None
 
-        if self.pk is None and get_request() is not None:
-            self.owner=get_request().user
+        #if self.pk is None and get_request() is not None:
+        #   self.owner=get_request().user
         super().save(*args, **kwargs)
 
 class PersonBase(models.Model): 
 
-	gender = models.CharField(null=False, blank=True  , max_length=30)
-	dob = models.DateField(null=False, blank=True  ,)
+	gender = models.CharField(null=True, blank=False  , max_length=30)
+	dob = models.DateField(null=True, blank=False  ,)
 	 # address = models.ForeignKey(Address, related_name='person')
 	class Meta:
 	 	abstract = True

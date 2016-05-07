@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if object %}
+        <h2>Edit {{ object.title }}</h2>
+    {% else %}
+        <h2>Create</h2>
+    {% endif %}
+    <form method="post"  action="">
+        {% csrf_token %}
+        {{ form|crispy}}
+        <input type="submit" />
+    </form>
+{% endblock %}

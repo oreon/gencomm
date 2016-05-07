@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import datetime
 import os
+import basicauth
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,7 +32,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = (
-    'grappelli',
+ #   'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-     'django_extensions',
+ #    'django_extensions',
      'basicauth',
      'allauth',
      'auditlog',
@@ -48,12 +51,18 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+    'floppyforms',
+     'crispy_forms',
+
+    'django_nvd3',
     'commerce',
     'patients',
-    
+ #   'django_tables2'
 )
 
 SITE_ID = 1
+
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -72,19 +81,30 @@ ROOT_URLCONF = 'gencomm.urls'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',                               
+        #'rest_framework.authentication.TokenAuthentication',                               
         'rest_framework.authentication.SessionAuthentication',
-    ),
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),  
                   
      'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        #'rest_framework.permissions.AllowAny',
+         'rest_framework.permissions.IsAuthenticated',
     ),
+                  
+     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',  
+                                 'rest_framework.filters.SearchFilter', 'rest_framework.filters.OrderingFilter'),             
                   
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
      'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5
+    
 }
 
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -105,22 +125,30 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
+     
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+                 os.path.join(BASE_DIR,'templates').replace('\\','/'),
+                 os.path.join(BASE_DIR, 'templates', 'plain', 'gencomm'),
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.core.context_processors.request',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+            ]
+            
         },
     },
 ]
 
 WSGI_APPLICATION = 'gencomm.wsgi.application'
 
+#BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
@@ -146,12 +174,22 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+import environ
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
+APPS_DIR = ROOT_DIR.path('gencomm')
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    str(APPS_DIR.path('static')),
+)
+
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 
 if DEBUG:
@@ -189,4 +227,28 @@ LOGGING = {
             'handlers': ['console'],
         },
     }
+}
+
+
+# See: http://django-crispy-forms.readthedocs.org/en/latest/install.html#template-packs
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
+# from basicauth.serializers import UserSerializer
+# 
+# 
+# def jwt_response_payload_handler(token, user=None, request=None):
+#     return {
+#         'token': token,
+#         'user': UserSerializer(user).data
+#     }
+
+
+
+
+
+JWT_AUTH = {
+     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+ #    'JWT_RESPONSE_PAYLOAD_HANDLER': jwt_response_payload_handler
 }

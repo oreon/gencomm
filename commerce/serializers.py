@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from commerce.models import Employee, Department, Skill, EmployeeSkill
+from commerce.models import Employee, Department, Skill, EmployeeSkill, Asset
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -97,6 +97,13 @@ class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
 
+class AssetSerializer(serializers.ModelSerializer):
+    
+    displayName = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Asset
+
 
 class EmployeeSkillWritableSerializer(serializers.ModelSerializer):
 
@@ -160,14 +167,12 @@ class FullEmployeeSerializer(EmployeeSerializer):
         
 class FullDepartmentSerializer(DepartmentSerializer):
 
- 
     employees = EmployeeSerializer(many=True, read_only=True)
  
-    
     class Meta(DepartmentSerializer.Meta):
         model = Department    
 
-        
+    
 
 
         

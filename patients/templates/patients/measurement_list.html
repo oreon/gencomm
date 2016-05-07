@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}{% load i18n %}
+{% block title %}Members{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>Your {{view.getCurrentPatientMeasurement.category.name}} Measurements  </h2>
+    <a class="btn btn-primary" href="{% url 'patients:createMeasurement'  view.getCurrentPatientMeasurement.id %}">Create New</a>
+   
+    <div class="list-group">
+        {% for m in measurement_list %}
+          
+            <h4 class="list-group-item-heading">{{ m.date }}  {{m.value  }}</h4>
+          
+        {% empty %}
+          No Measurements yet. 
+        {% endfor %}
+        
+		{% if is_paginated %}
+	        {% include "paginator.html" %}
+	    {% endif %}
+	    
+	    
+	    {% load nvd3_tags %}
+	    {% include_chart_jscss %}
+	    
+	    {% with data=view.getlinechartPt %}
+		    {% load_chart data.charttype data.chartdata data.chartcontainer data.extra %}
+		    
+		    {% include_container data.chartcontainer %}
+		    
+	    {% endwith %}
+    </div>
+    
+{% endblock content %}
