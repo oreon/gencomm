@@ -2,7 +2,7 @@ django-allauth==0.24.1
 django-appconf==1.0.1
 django-auditlog==0.3.2
 django-bootstrap3==6.2.2
-django-cors-headers==1.1.0
+django-cors-headers==3.0.0
 django-easy-pjax==1.2.0
 django-extensions==1.5.7
 django-filter==0.11.0
@@ -11,15 +11,16 @@ django-fsm-log==1.2.1
 django-fsm-admin
 django_admin_bootstrapped
 django-grappelli==2.7.3
-django-jsonfield==0.9.15
+django-jsonfield==1.0.1
 django-material==0.4.1
-django-registration-redux==1.2
+django-registration-redux==1.7
 django-rest-auth==0.6.0
 django-slowdown==0.0.1
-djangorestframework==3.2.5
+djangorestframework==3.9.1
 docopt==0.6.2
 docutils==0.12
 factory-boy==2.5.2
 fastcache==1.0.2
 django_tables2
 djangorestframework-jwt
+django>=2.2.18 # not directly required, pinned by Snyk to avoid a vulnerability
