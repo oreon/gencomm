@@ -23,3 +23,4 @@ factory-boy==2.5.2
 fastcache==1.0.2
 django_tables2
 djangorestframework-jwt
+django>=2.2.28 # not directly required, pinned by Snyk to avoid a vulnerability
