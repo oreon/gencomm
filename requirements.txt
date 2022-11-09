@@ -13,7 +13,7 @@ django_admin_bootstrapped
 django-grappelli==2.7.3
 django-jsonfield==0.9.15
 django-material==0.4.1
-django-registration-redux==1.2
+django-registration-redux==1.7
 django-rest-auth==0.6.0
 django-slowdown==0.0.1
 djangorestframework==3.2.5
@@ -23,3 +23,4 @@ factory-boy==2.5.2
 fastcache==1.0.2
 django_tables2
 djangorestframework-jwt
+django>=3.2.15 # not directly required, pinned by Snyk to avoid a vulnerability
