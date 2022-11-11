@@ -13,7 +13,7 @@ django_admin_bootstrapped
 django-grappelli==2.7.3
 django-jsonfield==0.9.15
 django-material==0.4.1
-django-registration-redux==1.2
+django-registration-redux==1.7
 django-rest-auth==0.6.0
 django-slowdown==0.0.1
 djangorestframework==3.2.5
