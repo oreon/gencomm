@@ -1,4 +1,4 @@
-django-allauth==0.24.1
+django-allauth==0.54.0
 django-appconf==1.0.1
 django-auditlog==0.3.2
 django-bootstrap3==6.2.2
