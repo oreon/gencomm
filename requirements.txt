@@ -10,7 +10,7 @@ django-fsm==2.3.0
 django-fsm-log==1.2.1
 django-fsm-admin
 django_admin_bootstrapped
-django-grappelli==2.7.3
+django-grappelli==2.15.2
 django-jsonfield==0.9.15
 django-material==0.4.1
 django-registration-redux==1.2
